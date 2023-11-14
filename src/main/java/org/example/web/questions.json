@@ -1,0 +1,615 @@
+[
+  {
+    "id": 1,
+    "title": "What is the largest planet in our solar system?",
+    "answers": [
+      {"title": "Jupiter", "is_correct": true},
+      {"title": "Mars", "is_correct": false},
+      {"title": "Earth", "is_correct": false},
+      {"title": "Saturn", "is_correct": false}
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Who wrote the play 'Romeo and Juliet'?",
+    "answers": [
+      {"title": "William Shakespeare", "is_correct": true},
+      {"title": "Jane Austen", "is_correct": false},
+      {"title": "Charles Dickens", "is_correct": false},
+      {"title": "Mark Twain", "is_correct": false}
+    ]
+  },
+  {
+    "id": 3,
+    "title": "What is the chemical symbol for gold?",
+    "answers": [
+      {"title": "Au", "is_correct": true},
+      {"title": "Ag", "is_correct": false},
+      {"title": "Fe", "is_correct": false},
+      {"title": "Hg", "is_correct": false}
+    ]
+  },
+  {
+    "id": 4,
+    "title": "In which year did World War II end?",
+    "answers": [
+      {"title": "1945", "is_correct": true},
+      {"title": "1939", "is_correct": false},
+      {"title": "1918", "is_correct": false},
+      {"title": "1950", "is_correct": false}
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Who painted the Mona Lisa?",
+    "answers": [
+      {"title": "Leonardo da Vinci", "is_correct": true},
+      {"title": "Pablo Picasso", "is_correct": false},
+      {"title": "Vincent van Gogh", "is_correct": false},
+      {"title": "Michelangelo", "is_correct": false}
+    ]
+  },
+  {
+    "id": 6,
+    "title": "What is the boiling point of water in degrees Celsius?",
+    "answers": [
+      {"title": "100°C", "is_correct": true},
+      {"title": "0°C", "is_correct": false},
+      {"title": "50°C", "is_correct": false},
+      {"title": "200°C", "is_correct": false}
+    ]
+  },
+  {
+    "id": 7,
+    "title": "What is the currency of Japan?",
+    "answers": [
+      {"title": "Yen", "is_correct": true},
+      {"title": "Dollar", "is_correct": false},
+      {"title": "Euro", "is_correct": false},
+      {"title": "Pound", "is_correct": false}
+    ]
+  },
+  {
+    "id": 8,
+    "title": "Who is the current President of the United States?",
+    "answers": [
+      {"title": "Variable (changeable)", "is_correct": true},
+      {"title": "Joe Biden", "is_correct": false},
+      {"title": "Barack Obama", "is_correct": false},
+      {"title": "Donald Trump", "is_correct": false}
+    ]
+  },
+  {
+    "id": 9,
+    "title": "What is the largest mammal in the world?",
+    "answers": [
+      {"title": "Blue Whale", "is_correct": true},
+      {"title": "African Elephant", "is_correct": false},
+      {"title": "Giraffe", "is_correct": false},
+      {"title": "Kangaroo", "is_correct": false}
+    ]
+  },
+  {
+    "id": 10,
+    "title": "What is the formula for calculating the area of a rectangle?",
+    "answers": [
+      {"title": "Length × Width", "is_correct": true},
+      {"title": "π × Radius²", "is_correct": false},
+      {"title": "½ × Base × Height", "is_correct": false},
+      {"title": "Side × Side × Side", "is_correct": false}
+    ]
+  },
+  {
+    "id": 11,
+    "title": "What is the main ingredient in guacamole?",
+    "answers": [
+      {"title": "Avocado", "is_correct": true},
+      {"title": "Tomato", "is_correct": false},
+      {"title": "Onion", "is_correct": false},
+      {"title": "Lettuce", "is_correct": false}
+    ]
+  },
+  {
+    "id": 12,
+    "title": "Who is the author of the 'Harry Potter' series?",
+    "answers": [
+      {"title": "J.K. Rowling", "is_correct": true},
+      {"title": "Stephen King", "is_correct": false},
+      {"title": "George R.R. Martin", "is_correct": false},
+      {"title": "Dan Brown", "is_correct": false}
+    ]
+  },
+  {
+    "id": 13,
+    "title": "What is the speed of light in a vacuum?",
+    "answers": [
+      {"title": "299,792,458 meters per second", "is_correct": true},
+      {"title": "100,000,000 meters per second", "is_correct": false},
+      {"title": "500,000,000 meters per second", "is_correct": false},
+      {"title": "1,000,000,000 meters per second", "is_correct": false}
+    ]
+  },
+  {
+    "id": 14,
+    "title": "What is the national flower of Japan?",
+    "answers": [
+      {"title": "Cherry Blossom", "is_correct": true},
+      {"title": "Rose", "is_correct": false},
+      {"title": "Lotus", "is_correct": false},
+      {"title": "Sunflower", "is_correct": false}
+    ]
+  },
+  {
+    "id": 15,
+    "title": "Who discovered penicillin?",
+    "answers": [
+      {"title": "Alexander Fleming", "is_correct": true},
+      {"title": "Marie Curie", "is_correct": false},
+      {"title": "Albert Einstein", "is_correct": false},
+      {"title": "Isaac Newton", "is_correct": false}
+    ]
+  },
+  {
+    "id": 16,
+    "title": "What is the capital of Australia?",
+    "answers": [
+      {"title": "Canberra", "is_correct": true},
+      {"title": "Sydney", "is_correct": false},
+      {"title": "Melbourne", "is_correct": false},
+      {"title": "Brisbane", "is_correct": false}
+    ]
+  },
+  {
+    "id": 17,
+    "title": "What is the largest desert in the world?",
+    "answers": [
+      {"title": "Antarctica (Polar Desert)", "is_correct": true},
+      {"title": "Sahara Desert", "is_correct": false},
+      {"title": "Gobi Desert", "is_correct": false},
+      {"title": "Arabian Desert", "is_correct": false}
+    ]
+  },
+  {
+    "id": 18,
+    "title": "Who wrote the 'Declaration of Independence'?",
+    "answers": [
+      {"title": "Thomas Jefferson", "is_correct": true},
+      {"title": "George Washington", "is_correct": false},
+      {"title": "Benjamin Franklin", "is_correct": false},
+      {"title": "John Adams", "is_correct": false}
+    ]
+  },
+  {
+    "id": 19,
+    "title": "What gas do plants absorb from the atmosphere during photosynthesis?",
+    "answers": [
+      {"title": "Carbon Dioxide (CO2)", "is_correct": true},
+      {"title": "Oxygen (O2)", "is_correct": false},
+      {"title": "Nitrogen (N2)", "is_correct": false},
+      {"title": "Hydrogen (H2)", "is_correct": false}
+    ]
+  },
+  {
+    "id": 20,
+    "title": "What is the tallest mountain in North America?",
+    "answers": [
+      {"title": "Denali (formerly Mount McKinley)", "is_correct": true},
+      {"title": "Mount Rainier", "is_correct": false},
+      {"title": "Mount St. Helens", "is_correct": false},
+      {"title": "Mount Elbert", "is_correct": false}
+    ]
+  },
+  {
+    "id": 21,
+    "title": "Who was the first person to set foot on the moon?",
+    "answers": [
+      {"title": "Neil Armstrong", "is_correct": true},
+      {"title": "Buzz Aldrin", "is_correct": false},
+      {"title": "John Glenn", "is_correct": false},
+      {"title": "Yuri Gagarin", "is_correct": false}
+    ]
+  },
+  {
+    "id": 22,
+    "title": "What is the chemical formula for water?",
+    "answers": [
+      {"title": "H2O", "is_correct": true},
+      {"title": "CO2", "is_correct": false},
+      {"title": "O2", "is_correct": false},
+      {"title": "N2", "is_correct": false}
+    ]
+  },
+  {
+    "id": 23,
+    "title": "What is the largest ocean on Earth?",
+    "answers": [
+      {"title": "Pacific Ocean", "is_correct": true},
+      {"title": "Atlantic Ocean", "is_correct": false},
+      {"title": "Indian Ocean", "is_correct": false},
+      {"title": "Arctic Ocean", "is_correct": false}
+    ]
+  },
+  {
+    "id": 24,
+    "title": "Who is known as the 'Father of Modern Physics'?",
+    "answers": [
+      {"title": "Albert Einstein", "is_correct": true},
+      {"title": "Isaac Newton", "is_correct": false},
+      {"title": "Niels Bohr", "is_correct": false},
+      {"title": "Galileo Galilei", "is_correct": false}
+    ]
+  },
+  {
+    "id": 25,
+    "title": "What is the smallest prime number?",
+    "answers": [
+      {"title": "2", "is_correct": true},
+      {"title": "1", "is_correct": false},
+      {"title": "3", "is_correct": false},
+      {"title": "0", "is_correct": false}
+    ]
+  },
+  {
+    "id": 26,
+    "title": "What is the largest species of shark?",
+    "answers": [
+      {"title": "Whale Shark", "is_correct": true},
+      {"title": "Great White Shark", "is_correct": false},
+      {"title": "Hammerhead Shark", "is_correct": false},
+      {"title": "Tiger Shark", "is_correct": false}
+    ]
+  },
+  {
+    "id": 27,
+    "title": "Who is the Greek god of thunder and lightning?",
+    "answers": [
+      {"title": "Zeus", "is_correct": true},
+      {"title": "Poseidon", "is_correct": false},
+      {"title": "Hades", "is_correct": false},
+      {"title": "Apollo", "is_correct": false}
+    ]
+  },
+  {
+    "id": 28,
+    "title": "What is the capital of Brazil?",
+    "answers": [
+      {"title": "Brasília", "is_correct": true},
+      {"title": "Rio de Janeiro", "is_correct": false},
+      {"title": "São Paulo", "is_correct": false},
+      {"title": "Salvador", "is_correct": false}
+    ]
+  },
+  {
+      "id": 29,
+        "title": "What is the largest country in the world?",
+        "answers": [
+          {"title": "Russia", "is_correct": true},
+          {"title": "Canada", "is_correct": false},
+          {"title": "China", "is_correct": false},
+          {"title": "United States", "is_correct": false}
+        ]
+    },
+  {
+    "id": 29,
+    "title": "What is the largest country in the world?",
+    "answers": [
+      {"title": "Russia", "is_correct": true},
+      {"title": "Canada", "is_correct": false},
+      {"title": "China", "is_correct": false},
+      {"title": "United States", "is_correct": false}
+    ]
+  },
+  {
+    "id": 30,
+    "title": "Who is the author of the novel 'To Kill a Mockingbird'?",
+    "answers": [
+      {"title": "Harper Lee", "is_correct": true},
+      {"title": "F. Scott Fitzgerald", "is_correct": false},
+      {"title": "J.D. Salinger", "is_correct": false},
+      {"title": "John Steinbeck", "is_correct": false}
+    ]
+  },
+  {
+    "id": 31,
+    "title": "What gas makes up the majority of Earth's atmosphere?",
+    "answers": [
+      {"title": "Nitrogen", "is_correct": true},
+      {"title": "Oxygen", "is_correct": false},
+      {"title": "Carbon Dioxide", "is_correct": false},
+      {"title": "Hydrogen", "is_correct": false}
+    ]
+  },
+  {
+    "id": 32,
+    "title": "Who is the famous scientist known for his theory of general relativity?",
+    "answers": [
+      {"title": "Albert Einstein", "is_correct": true},
+      {"title": "Isaac Newton", "is_correct": false},
+      {"title": "Stephen Hawking", "is_correct": false},
+      {"title": "Niels Bohr", "is_correct": false}
+    ]
+  },
+  {
+    "id": 33,
+    "title": "What is the chemical symbol for iron?",
+    "answers": [
+      {"title": "Fe", "is_correct": true},
+      {"title": "Au", "is_correct": false},
+      {"title": "Ag", "is_correct": false},
+      {"title": "Hg", "is_correct": false}
+    ]
+  },
+  {
+    "id": 34,
+    "title": "What is the largest moon of Jupiter?",
+    "answers": [
+      {"title": "Ganymede", "is_correct": true},
+      {"title": "Europa", "is_correct": false},
+      {"title": "Callisto", "is_correct": false},
+      {"title": "Io", "is_correct": false}
+    ]
+  },
+  {
+    "id": 35,
+    "title": "What is the process by which plants make their own food using sunlight?",
+    "answers": [
+      {"title": "Photosynthesis", "is_correct": true},
+      {"title": "Respiration", "is_correct": false},
+      {"title": "Transpiration", "is_correct": false},
+      {"title": "Fermentation", "is_correct": false}
+    ]
+  },
+  {
+    "id": 36,
+    "title": "Who is the author of 'The Great Gatsby'?",
+    "answers": [
+      {"title": "F. Scott Fitzgerald", "is_correct": true},
+      {"title": "Ernest Hemingway", "is_correct": false},
+      {"title": "John Steinbeck", "is_correct": false},
+      {"title": "Harper Lee", "is_correct": false}
+    ]
+  },
+  {
+    "id": 37,
+    "title": "What is the capital of France?",
+    "answers": [
+      {"title": "Paris", "is_correct": true},
+      {"title": "London", "is_correct": false},
+      {"title": "Berlin", "is_correct": false},
+      {"title": "Rome", "is_correct": false}
+    ]
+  },
+  {
+    "id": 38,
+    "title": "What is the largest planet in our solar system?",
+    "answers": [
+      {"title": "Jupiter", "is_correct": true},
+      {"title": "Mars", "is_correct": false},
+      {"title": "Earth", "is_correct": false},
+      {"title": "Saturn", "is_correct": false}
+    ]
+  },
+  {
+    "id": 39,
+    "title": "Who is the famous detective created by Sir Arthur Conan Doyle?",
+    "answers": [
+      {"title": "Sherlock Holmes", "is_correct": true},
+      {"title": "Hercule Poirot", "is_correct": false},
+      {"title": "Miss Marple", "is_correct": false},
+      {"title": "Sam Spade", "is_correct": false}
+    ]
+  },
+  {
+    "id": 40,
+    "title": "What is the smallest planet in our solar system?",
+    "answers": [
+      {"title": "Mercury", "is_correct": true},
+      {"title": "Venus", "is_correct": false},
+      {"title": "Mars", "is_correct": false},
+      {"title": "Earth", "is_correct": false}
+    ]
+  },
+  {
+    "id": 41,
+    "title": "What is the chemical symbol for silver?",
+    "answers": [
+      {"title": "Ag", "is_correct": true},
+      {"title": "Au", "is_correct": false},
+      {"title": "Fe", "is_correct": false},
+      {"title": "Hg", "is_correct": false}
+    ]
+  },
+  {
+    "id": 42,
+    "title": "Who painted the famous artwork 'Starry Night'?",
+    "answers": [
+      {"title": "Vincent van Gogh", "is_correct": true},
+      {"title": "Pablo Picasso", "is_correct": false},
+      {"title": "Leonardo da Vinci", "is_correct": false},
+      {"title": "Michelangelo", "is_correct": false}
+    ]
+  },
+  {
+    "id": 43,
+    "title": "What is the largest bone in the human body?",
+    "answers": [
+      {"title": "Femur", "is_correct": true},
+      {"title": "Tibia", "is_correct": false},
+      {"title": "Radius", "is_correct": false},
+      {"title": "Ulna", "is_correct": false}
+    ]
+  },
+  {
+    "id": 44,
+    "title": "Which planet is known as the 'Red Planet'?",
+    "answers": [
+      {"title": "Mars", "is_correct": true},
+      {"title": "Venus", "is_correct": false},
+      {"title": "Jupiter", "is_correct": false},
+      {"title": "Saturn", "is_correct": false}
+    ]
+  },
+  {
+    "id": 45,
+    "title": "Who wrote the novel '1984'?",
+    "answers": [
+      {"title": "George Orwell", "is_correct": true},
+      {"title": "Aldous Huxley", "is_correct": false},
+      {"title": "Ray Bradbury", "is_correct": false},
+      {"title": "Margaret Atwood", "is_correct": false}
+    ]
+  },
+  {
+    "id": 46,
+    "title": "What is the smallest planet in our solar system?",
+    "answers": [
+      {"title": "Mercury", "is_correct": true},
+      {"title": "Venus", "is_correct": false},
+      {"title": "Mars", "is_correct": false},
+      {"title": "Earth", "is_correct": false}
+    ]
+  },
+  {
+    "id": 47,
+    "title": "What is the chemical symbol for silver?",
+    "answers": [
+      {"title": "Ag", "is_correct": true},
+      {"title": "Au", "is_correct": false},
+      {"title": "Fe", "is_correct": false},
+      {"title": "Hg", "is_correct": false}
+    ]
+  },
+  {
+    "id": 48,
+    "title": "Who painted the famous artwork 'Starry Night'?",
+    "answers": [
+      {"title": "Vincent van Gogh", "is_correct": true},
+      {"title": "Pablo Picasso", "is_correct": false},
+      {"title": "Leonardo da Vinci", "is_correct": false},
+      {"title": "Michelangelo", "is_correct": false}
+    ]
+  },
+  {
+    "id": 49,
+    "title": "What is the largest bone in the human body?",
+    "answers": [
+      {"title": "Femur", "is_correct": true},
+      {"title": "Tibia", "is_correct": false},
+      {"title": "Radius", "is_correct": false},
+      {"title": "Ulna", "is_correct": false}
+    ]
+  },
+  {
+    "id": 50,
+    "title": "Which planet is known as the 'Red Planet'?",
+    "answers": [
+      {"title": "Mars", "is_correct": true},
+      {"title": "Venus", "is_correct": false},
+      {"title": "Jupiter", "is_correct": false},
+      {"title": "Saturn", "is_correct": false}
+    ]
+  },
+  {
+    "id": 51,
+    "title": "Who is the famous playwright known for works like 'Hamlet' and 'Macbeth'?",
+    "answers": [
+      {"title": "William Shakespeare", "is_correct": true},
+      {"title": "George Bernard Shaw", "is_correct": false},
+      {"title": "Anton Chekhov", "is_correct": false},
+      {"title": "Oscar Wilde", "is_correct": false}
+    ]
+  },
+  {
+    "id": 52,
+    "title": "What is the largest planet in our solar system?",
+    "answers": [
+      {"title": "Jupiter", "is_correct": true},
+      {"title": "Mars", "is_correct": false},
+      {"title": "Earth", "is_correct": false},
+      {"title": "Saturn", "is_correct": false}
+    ]
+  },
+  {
+    "id": 53,
+    "title": "What is the smallest prime number?",
+    "answers": [
+      {"title": "2", "is_correct": true},
+      {"title": "1", "is_correct": false},
+      {"title": "3", "is_correct": false},
+      {"title": "0", "is_correct": false}
+    ]
+  },
+  {
+    "id": 54,
+    "title": "What is the largest species of shark?",
+    "answers": [
+      {"title": "Whale Shark", "is_correct": true},
+      {"title": "Great White Shark", "is_correct": false},
+      {"title": "Hammerhead Shark", "is_correct": false},
+      {"title": "Tiger Shark", "is_correct": false}
+    ]
+  },
+  {
+    "id": 55,
+    "title": "Who is the Greek god of thunder and lightning?",
+    "answers": [
+      {"title": "Zeus", "is_correct": true},
+      {"title": "Poseidon", "is_correct": false},
+      {"title": "Hades", "is_correct": false},
+      {"title": "Apollo", "is_correct": false}
+    ]
+  },
+  {
+    "id": 56,
+    "title": "What is the capital of Brazil?",
+    "answers": [
+      {"title": "Brasília", "is_correct": true},
+      {"title": "Rio de Janeiro", "is_correct": false},
+      {"title": "São Paulo", "is_correct": false},
+      {"title": "Salvador", "is_correct": false}
+    ]
+  },
+  {
+    "id": 57,
+    "title": "What is the largest ocean on Earth?",
+    "answers": [
+      {"title": "Pacific Ocean", "is_correct": true},
+      {"title": "Atlantic Ocean", "is_correct": false},
+      {"title": "Indian Ocean", "is_correct": false},
+      {"title": "Arctic Ocean", "is_correct": false}
+    ]
+  },
+  {
+    "id": 58,
+    "title": "Who is known as the 'Father of Modern Physics'?",
+    "answers": [
+      {"title": "Albert Einstein", "is_correct": true},
+      {"title": "Isaac Newton", "is_correct": false},
+      {"title": "Niels Bohr", "is_correct": false},
+      {"title": "Galileo Galilei", "is_correct": false}
+    ]
+  },
+  {
+    "id": 59,
+    "title": "What is the smallest prime number?",
+    "answers": [
+      {"title": "2", "is_correct": true},
+      {"title": "1", "is_correct": false},
+      {"title": "3", "is_correct": false},
+      {"title": "0", "is_correct": false}
+    ]
+  },
+  {
+    "id": 60,
+    "title": "What is the largest species of shark?",
+    "answers": [
+      {"title": "Whale Shark", "is_correct": true},
+      {"title": "Great White Shark", "is_correct": false},
+      {"title": "Hammerhead Shark", "is_correct": false},
+      {"title": "Tiger Shark", "is_correct": false}
+    ]
+  }
+]
+
+
+
