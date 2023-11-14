@@ -1,0 +1,21 @@
+1. Setup Vert.x Project
+Initialize a Vert.x project in Java.
+Include necessary dependencies like Vert.x core, Vert.x web, etc.
+2. Question Bank Creation
+Create a question bank containing at least 60 questions.
+Store these questions in a database or in-memory storage. Redis could be a good choice for this due to its fast read/write capabilities.
+3. Random Question Selection
+Implement a function to randomly select 10 questions from the question bank for each exam session.
+Ensure that the same question is not selected more than once for a single exam session.
+4. Shuffling Choices for Each User
+When a question is presented to a user, shuffle the order of the choices.
+This shuffling should be unique for each user who takes the exam.
+5. Scoring System
+Implement a scoring system where:
+Correct answer on first attempt: 2 marks.
+Incorrect answer on first attempt: Remove the wrong choice and present 3 choices.
+Correct answer on second attempt: 1 mark.
+Incorrect answer on second attempt: 0 marks.
+6. Redis or Caching
+Utilize Redis or another caching solution to store the state of the exam for each user.
+This includes which questions have been answered, the current score, and the remaining choices for each question.
