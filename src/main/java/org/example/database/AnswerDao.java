@@ -1,6 +1,6 @@
-package org.example.dao;
+package org.example.database;
 
-import org.example.model.Answers;
+import org.example.Entities.Answers;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,6 +15,25 @@ public class AnswerDao {
         this.connection = connection;
         System.out.println("connection" + connection);
     }
+
+    public boolean isAnswerCorrect(int questionId, int answerId)  {
+        String sql = "SELECT is_correct FROM answers WHERE question_id = ? AND id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, questionId);
+            statement.setInt(2, answerId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getBoolean("is_correct");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return false; // Return false if no answer is found or if the answer is not correct
+    }
     public void addAnswer(Answers answers)
     {
         String sql = "INSERT INTO answers (id, title, is_correct, question_id) VALUES (?, ?, ?, ?)";
@@ -22,7 +41,7 @@ public class AnswerDao {
         {
             statement.setInt(1,answers.getId());
             statement.setString(2,answers.getTitle());
-            statement.setBoolean(3,answers.is_correct());
+            statement.setBoolean(3,answers.isCorrect());
             statement.setInt(4,answers.getQuestionId());
             statement.executeUpdate();
             System.out.println("Answer added to the database");

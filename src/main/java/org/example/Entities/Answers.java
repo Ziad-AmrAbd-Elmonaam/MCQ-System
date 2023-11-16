@@ -1,4 +1,4 @@
-package org.example.model;
+package org.example.Entities;
 
 public class Answers {
     private  int id;
@@ -8,10 +8,10 @@ public class Answers {
     public Answers() {
     }
 
-    public Answers(int id, String title, boolean is_correct, int questionId) {
+    public Answers(int id, String title, boolean isCorrect, int questionId) {
         this.id = id;
         this.title = title;
-        this.is_correct = is_correct;
+        this.is_correct = isCorrect;
         this.questionId = questionId;
     }
         public int getId() {
@@ -25,9 +25,6 @@ public class Answers {
         }
         public void setTitle(String title) {
             this.title = title;
-        }
-        public boolean is_correct() {
-            return is_correct;
         }
         public void setIs_correct(boolean is_correct) {
             this.is_correct = is_correct;
