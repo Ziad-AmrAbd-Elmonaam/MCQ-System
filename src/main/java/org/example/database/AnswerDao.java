@@ -1,6 +1,6 @@
 package org.example.database;
 
-import org.example.Entities.Answers;
+import org.example.Entities.ExamQuestionAnswer;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -34,15 +34,15 @@ public class AnswerDao {
 
         return false; // Return false if no answer is found or if the answer is not correct
     }
-    public void addAnswer(Answers answers)
+    public void addAnswer(ExamQuestionAnswer examQuestionAnswer)
     {
         String sql = "INSERT INTO answers (id, title, is_correct, question_id) VALUES (?, ?, ?, ?)";
         try(PreparedStatement statement = connection.prepareStatement(sql))
         {
-            statement.setInt(1,answers.getId());
-            statement.setString(2,answers.getTitle());
-            statement.setBoolean(3,answers.isCorrect());
-            statement.setInt(4,answers.getQuestionId());
+            statement.setInt(1, examQuestionAnswer.getId());
+            statement.setString(2, examQuestionAnswer.getTitle());
+            statement.setBoolean(3, examQuestionAnswer.isCorrect());
+            statement.setInt(4, examQuestionAnswer.getExamQuestionId());
             statement.executeUpdate();
             System.out.println("Answer added to the database");
 
@@ -52,9 +52,9 @@ public class AnswerDao {
             e.printStackTrace();
         }
     }
-    public List<Answers> getAllAnswers()
+    public List<ExamQuestionAnswer> getAllAnswers()
     {
-        List<Answers> answers = new ArrayList<>();
+        List<ExamQuestionAnswer> answers = new ArrayList<>();
         String sql = "SELECT * FROM answers";
         try (PreparedStatement statement=connection.prepareStatement(sql);
              ResultSet rs = statement.executeQuery())
@@ -65,7 +65,7 @@ public class AnswerDao {
                 String title = rs.getString("title");
                 boolean is_correct = rs.getBoolean("is_correct");
                 int questionId = rs.getInt("question_id");
-                Answers answer = new Answers(id,title,is_correct,questionId);
+                ExamQuestionAnswer answer = new ExamQuestionAnswer(id,title,is_correct,questionId);
                 answers.add(answer);
             }
         }

@@ -7,16 +7,21 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
+import org.example.Entities.ExamQuestion;
 import org.example.database.AnswerDao;
+import org.example.database.ExamDao;
 import org.example.database.QuestionDao;
-import org.example.Entities.Answers;
-import org.example.Entities.Question;
+import org.example.service.QuestionService;
+import org.example.service.QuizService;
 import redis.clients.jedis.Jedis;
 
 import java.sql.*;
 import java.util.List;
 
 public class QuizApiVerticle extends AbstractVerticle {
+    private ExamDao examDao;
+    private QuestionService questionService;
+    private QuizService quizService;
     private Jedis jedis ;
 
     private QuestionDao questionDao;
@@ -25,21 +30,27 @@ public class QuizApiVerticle extends AbstractVerticle {
     @Override
     public void start(Promise<Void> startPromise) throws Exception {
         this.jedis= new Jedis("localhost", 6379);
-        // Initialize your SQLite database connection here
+
         Connection connection = DriverManager.getConnection("jdbc:sqlite:database/database.db");
-        generateDatabase();
+        this.examDao = new ExamDao(connection);
         this.questionDao = new QuestionDao(connection); // Initialize QuestionDao with the connection
         this.answerDao = new AnswerDao(connection);
+        this.questionService = new QuestionService(questionDao, jedis, examDao);
+        this.quizService = new QuizService(jedis, answerDao);
+
+
+
 
         Router router = Router.router(vertx);
 
         router.route().handler(BodyHandler.create());
         router.get("/questions").handler(this::getAllQuestions);
-        router.post("/questions").handler(this::addQuestion);
-        router.get("/answers").handler(this::getAllAnswers);
-        router.post("/answers").handler(this::addAnswers);
         router.get("/random-questions").handler(this::getRandomQuestionsHandler);
-        router.get("/validate-answer").handler(this::getAnswerQuestionHandler);
+        router.get("/validate-answer").handler(this::validateAnswerHandler);
+        router.get("/start-exam").handler(this::startExam);
+//        router.post("/start-exam").handler(this::startExamHandler);
+//        router.post("/answer-question").handler(this::answerQuestionHandler);
+//        router.post("/finalize-exam").handler(this::finalizeExamHandler);
 
 
 
@@ -52,147 +63,108 @@ public class QuizApiVerticle extends AbstractVerticle {
             }
         });
     }
-    private void getAnswerQuestionHandler(RoutingContext context) {
+    private void startExam(RoutingContext context) {
+    }
+//    private void startExamHandler(RoutingContext context) {
+//        // Extract the body as a JsonObject
+//        JsonObject requestBody = context.getBodyAsJson();
+//
+//        // Now get the email from the requestBody JsonObject
+//        String email = requestBody.getString("email");
+//        if (email == null || email.trim().isEmpty()) {
+//            context.response().setStatusCode(400).end("Email is required");
+//            return;
+//        }
+//
+//        // Start the exam by getting random questions for the user
+//        String questionsJson = questionService.getRandomQuestions(email);
+//        context.response()
+//                .putHeader("content-type", "application/json")
+//                .end(questionsJson);
+//    }
+
+
+    // Answer Question Endpoint
+//    private void answerQuestionHandler(RoutingContext context) {
+//        JsonObject requestBody = context.getBodyAsJson();
+//        String email = requestBody.getString("email");
+//        int questionId = requestBody.getInteger("question_id");
+//        int answerId = requestBody.getInteger("answer_id");
+//
+//        JsonObject response = quizService.validateAnswerAndManageScore(email, questionId, answerId);
+//        context.response()
+//                .putHeader("content-type", "application/json")
+//                .end(response.encode());
+//    }
+
+    // Finalize Exam Endpoint (if needed)
+//    private void finalizeExamHandler(RoutingContext context) {
+//        // Extract the body as a JsonObject
+//        JsonObject requestBody = context.getBodyAsJson();
+//
+//        // Now get the email from the requestBody JsonObject
+//        String email = requestBody.getString("email");
+//        if (email == null || email.trim().isEmpty()) {
+//            context.response().setStatusCode(400).end("Email is required");
+//            return;
+//        }
+//
+//        int finalScore = getFinalScoreForUser(email);
+//
+//        context.response()
+//                .putHeader("content-type", "application/json")
+//                .end(new JsonObject().put("finalScore", finalScore).encode());
+//    }
+
+
+    // Mock method to get the final score for a user
+// Replace this with your actual implementation.
+//    private int getFinalScoreForUser(String email) {
+//        // Here you would have the logic to calculate the final score or retrieve it from Redis
+//        // For the sake of this example, let's assume we are retrieving it from Redis.
+//        String userScoreKey = email + ":score";
+//        String scoreStr = jedis.get(userScoreKey);
+//        int score = 0;
+//        if (scoreStr != null) {
+//            score = Integer.parseInt(scoreStr);
+//            // Optionally, you can delete the user's score from Redis after retrieving it
+//            jedis.del(userScoreKey);
+//        }
+//        return score;
+//    }
+    private void validateAnswerHandler(RoutingContext context) {
         JsonObject requestBody = context.getBodyAsJson();
         String email = requestBody.getString("email");
         int questionId = requestBody.getInteger("question_id");
         int answerId = requestBody.getInteger("answer_id");
 
-        boolean isCorrect = answerDao.isAnswerCorrect(questionId, answerId);
-        int score = updateScoreAndManageQuestion(email, questionId, isCorrect, answerId); // Pass answerId here
-
-        JsonObject response = new JsonObject()
-                .put("isCorrect", isCorrect)
-                .put("score", score);
+        JsonObject response = quizService.validateAnswerAndManageScore(email, questionId, answerId);
 
         context.response()
                 .putHeader("content-type", "application/json")
                 .end(response.encode());
-    }
-        private int updateScoreAndManageQuestion(String email, int questionId, boolean isCorrect, int answerId) {
-        String userQuestionKey = email + ":question:" + questionId;
-        String userScoreKey = email + ":score";
-        int attempts = jedis.incr(userQuestionKey).intValue();
-
-        if (isCorrect) {
-            int score = (attempts == 1) ? 2 : 1;
-            jedis.incrBy(userScoreKey, score);
-            jedis.del(userQuestionKey); // Reset attempts for this question
-            return score;
-        } else {
-            if (attempts == 1) {
-                addQuestionBackToPool(email, questionId, answerId); // Use answerId here
-            } else {
-                jedis.del(userQuestionKey); // Reset attempts for this question
-            }
-        }
-        return 0;
-    }
-    private void addQuestionBackToPool(String email, int questionId, int incorrectAnswerId) {
-        // Example key for user's question pool
-        String userQuestionPoolKey = email + ":questionPool";
-
-        JsonObject questionInfo = new JsonObject()
-                .put("questionId", questionId)
-                .put("excludeAnswerId", incorrectAnswerId);
-
-        jedis.rpush(userQuestionPoolKey, questionInfo.encode());
     }
 
 
 
 
     private void getRandomQuestionsHandler(RoutingContext context) {
-        String mail = "ziad@gmail.com";
-        if (jedis.exists(mail)) {
-            String value = jedis.get(mail);
-            context.response()
-                    .putHeader("content-type", "application/json")
-                    .end(value);
-        } else {
-            // get the value from database
-            List<Question> questions = questionDao.getRandomQuestions(10);
-            String value = Json.encode(questions);
-            jedis.set(mail, value);
-            context.response()
-                    .putHeader("content-type", "application/json")
-                    .end(value);
-        }
-
+        String email = "ziad@gmail.com";
+        String questionsJson = questionService.getRandomQuestions(email);
+        context.response()
+                .putHeader("content-type", "application/json")
+                .end(questionsJson);
     }
 
 
 
-    private void generateDatabase() {
-        String url = "jdbc:sqlite:database/database.db";  // Adjust the path as necessary
-
-        // SQL statement for creating a new table
-        String sql = "CREATE TABLE IF NOT EXISTS questions (" +
-                "id INTEGER PRIMARY KEY," +
-                "title TEXT NOT NULL);";
-        String sql2 = "CREATE TABLE IF NOT EXISTS answers (" +
-                "id INTEGER PRIMARY KEY," +
-                "title TEXT NOT NULL," +
-                "is_correct BOOLEAN NOT NULL," +
-                "question_id INTEGER NOT NULL," +
-                "FOREIGN KEY (question_id) REFERENCES questions (id));";
-
-        try (Connection conn = DriverManager.getConnection(url);
-             Statement stmt = conn.createStatement()) {
-            // create a new table
-            stmt.execute(sql);
-            stmt.execute(sql2);
-            System.out.println("Database created successfully");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
 
     private void getAllQuestions(RoutingContext context) {
-        List<Question> questions = questionDao.getAllQuestions();
+        List<ExamQuestion> ExamQuestions = questionService.getAllQuestions();
         context.response()
                 .putHeader("content-type", "application/json")
-                .end(Json.encode(questions));
+                .end(Json.encode(ExamQuestions));
     }
-
-    private void addQuestion(RoutingContext context) {
-        Question question = context.getBodyAsJson().mapTo(Question.class);
-
-        // Add logic to insert the question into the database using QuestionDao
-        questionDao.addQuestion(question); // Implement this method in your QuestionDao
-
-        context.response()
-                .setStatusCode(201) // HTTP 201 Created
-                .putHeader("content-type", "application/json")
-                .end(Json.encodePrettily(question));
-    }
-
-    private void getAllAnswers(RoutingContext context) {
-        List<Answers> answers = answerDao.getAllAnswers();
-        context.response()
-                .putHeader("content-type", "application/json")
-                .end(Json.encode(answers));
-    }
-
-    private void addAnswers(RoutingContext context) {
-        JsonObject requestBody = context.getBodyAsJson();
-        Answers answers = new Answers();
-
-        // Parse JSON data and map it to Answers object
-        answers.setId(requestBody.getInteger("id"));
-        answers.setTitle(requestBody.getString("title"));
-        answers.setIsCorrect(requestBody.getBoolean("is_correct"));
-        answers.setQuestionId(requestBody.getInteger("question_id"));
-
-        // Add logic to insert the answers into the database using AnswerDao
-        answerDao.addAnswer(answers); // Implement this method in your AnswerDao
-
-        context.response()
-                .setStatusCode(201) // HTTP 201 Created
-                .putHeader("content-type", "application/json")
-                .end(Json.encodePrettily(answers));
-    }
-
 
 
 }

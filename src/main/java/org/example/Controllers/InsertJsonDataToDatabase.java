@@ -25,14 +25,15 @@ public class InsertJsonDataToDatabase {
         String url = "jdbc:sqlite:database/database.db";  // Adjust the path as necessary
 
         try (Connection connection = DriverManager.getConnection(url)) {
+
             // Parse the provided JSON data
-            String jsonData = readJsonFromFile("src/main/java/org/example/web/questions.json");
+            String jsonData = readJsonFromFile("src/main/java/org/example/database/questions.json");
+            System.out.println("jsonData = " + jsonData);
 
 
             JsonArray questionsArray = new JsonArray(jsonData);
 
             for (Object obj : questionsArray) {
-
 
                 if (obj instanceof JsonObject questionJson) {
 

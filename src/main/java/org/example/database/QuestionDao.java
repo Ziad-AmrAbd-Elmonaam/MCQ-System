@@ -1,7 +1,7 @@
     package org.example.database;
 
-    import org.example.Entities.Answers;
-    import org.example.Entities.Question;
+    import org.example.Entities.ExamQuestionAnswer;
+    import org.example.Entities.ExamQuestion;
 
     import java.sql.Connection;
     import java.sql.PreparedStatement;
@@ -21,13 +21,14 @@
             this.connection = connection;
             System.out.println("connection" + connection);
         }
-        public void addQuestion(Question question) {
+        public void addQuestion(ExamQuestion examQuestion) {
             String sql = "INSERT INTO questions (id, title) VALUES (?, ?)";
 
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 // Set the id and title of the question
-                statement.setInt(1, question.getId());
-                statement.setString(2, question.getTitle());
+                statement.setInt(1, examQuestion.getId());
+                statement.setString(2, examQuestion.getTitle());
+
 
                 // Execute the update
                 statement.executeUpdate();
@@ -40,8 +41,8 @@
 
 
         // Method to retrieve all questions from the database
-        public List<Question> getAllQuestions() {
-            List<Question> questions = new ArrayList<>();
+        public List<ExamQuestion> getAllQuestions() {
+            List<ExamQuestion> ExamQuestions = new ArrayList<>();
             String sql = "SELECT * FROM questions";
             try (PreparedStatement statement = connection.prepareStatement(sql);
                  ResultSet rs = statement.executeQuery()) {
@@ -50,18 +51,18 @@
                     int id = rs.getInt("id");
                     String title = rs.getString("title");
 
-                    Question question = new Question(id, title);
-                    questions.add(question);
+                    ExamQuestion examQuestion = new ExamQuestion(id, title, 0, 0, 0);
+                    ExamQuestions.add(examQuestion);
                 }
             } catch (SQLException e) {
                 // Handle the exception more gracefully, log it, or rethrow as needed
                 e.printStackTrace();
             }
-            return questions;
+            return ExamQuestions;
         }
 
-        public List<Question> getRandomQuestions(int limit) {
-            List<Question> randomQuestions = new ArrayList<>();
+        public List<ExamQuestion> getRandomQuestions(int limit) {
+            List<ExamQuestion> randomExamQuestions = new ArrayList<>();
             String sql = "SELECT q.id AS questionID, "
                     + "q.title AS questionTitle, "
                     + "a.id AS answerID, "
@@ -81,7 +82,7 @@
                 statement.setInt(1, limit);
 
                 try (ResultSet rs = statement.executeQuery()) {
-                    Map<Integer, Question> questionsMap = new HashMap<>();
+                    Map<Integer, ExamQuestion> questionsMap = new HashMap<>();
                     while (rs.next()) {
                         int questionId = rs.getInt("questionID");
                         String questionTitle = rs.getString("questionTitle");
@@ -90,26 +91,26 @@
                         boolean answerCorrect = rs.getBoolean("answerCorrect");
 
                         // Check if the question is already in the map
-                        Question question = questionsMap.get(questionId);
-                        if (question == null) {
+                        ExamQuestion examQuestion = questionsMap.get(questionId);
+                        if (examQuestion == null) {
 
-                            question = new Question(questionId, questionTitle);
-                            questionsMap.put(questionId, question);
+                            examQuestion = new ExamQuestion(questionId, questionTitle);
+                            questionsMap.put(questionId, examQuestion);
                         }
 
                         // Add the answer to the question
-                        Answers answer = new Answers(answerId, answerTitle, answerCorrect, questionId);
-                        question.addAnswer(answer); // Ensure that Question class has a method to add answers
+                        ExamQuestionAnswer answer = new ExamQuestionAnswer(answerId, answerTitle, answerCorrect, questionId);
+                        examQuestion.addAnswer(answer); // Ensure that Question class has a method to add answers
                     }
 
 
                     // Convert the map values to a list
-                    randomQuestions.addAll(questionsMap.values());
+                    randomExamQuestions.addAll(questionsMap.values());
                 }
             } catch (SQLException e) {
                 e.printStackTrace(); // Replace with more robust error handling
             }
-            return randomQuestions;
+            return randomExamQuestions;
         }
 
 
