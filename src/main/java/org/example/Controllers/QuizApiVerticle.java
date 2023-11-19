@@ -3,11 +3,13 @@ package org.example.Controllers;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import org.example.Entities.ExamQuestion;
+import org.example.Entities.ExamQuestionAnswer;
 import org.example.database.AnswerDao;
 import org.example.database.ExamDao;
 import org.example.database.QuestionDao;
@@ -45,12 +47,9 @@ public class QuizApiVerticle extends AbstractVerticle {
 
         router.route().handler(BodyHandler.create());
         router.get("/questions").handler(this::getAllQuestions);
-        router.get("/random-questions").handler(this::getRandomQuestionsHandler);
-        router.get("/validate-answer").handler(this::validateAnswerHandler);
-        router.get("/start-exam").handler(this::startExam);
-//        router.post("/start-exam").handler(this::startExamHandler);
-//        router.post("/answer-question").handler(this::answerQuestionHandler);
-//        router.post("/finalize-exam").handler(this::finalizeExamHandler);
+        router.get("/random-questions/:email").handler(this::getRandomQuestionsHandler);
+        router.get("/answer-question/:email/:questionId/:answerId").handler(this::validateAnswer);
+
 
 
 
@@ -63,93 +62,9 @@ public class QuizApiVerticle extends AbstractVerticle {
             }
         });
     }
-    private void startExam(RoutingContext context) {
-    }
-//    private void startExamHandler(RoutingContext context) {
-//        // Extract the body as a JsonObject
-//        JsonObject requestBody = context.getBodyAsJson();
-//
-//        // Now get the email from the requestBody JsonObject
-//        String email = requestBody.getString("email");
-//        if (email == null || email.trim().isEmpty()) {
-//            context.response().setStatusCode(400).end("Email is required");
-//            return;
-//        }
-//
-//        // Start the exam by getting random questions for the user
-//        String questionsJson = questionService.getRandomQuestions(email);
-//        context.response()
-//                .putHeader("content-type", "application/json")
-//                .end(questionsJson);
-//    }
-
-
-    // Answer Question Endpoint
-//    private void answerQuestionHandler(RoutingContext context) {
-//        JsonObject requestBody = context.getBodyAsJson();
-//        String email = requestBody.getString("email");
-//        int questionId = requestBody.getInteger("question_id");
-//        int answerId = requestBody.getInteger("answer_id");
-//
-//        JsonObject response = quizService.validateAnswerAndManageScore(email, questionId, answerId);
-//        context.response()
-//                .putHeader("content-type", "application/json")
-//                .end(response.encode());
-//    }
-
-    // Finalize Exam Endpoint (if needed)
-//    private void finalizeExamHandler(RoutingContext context) {
-//        // Extract the body as a JsonObject
-//        JsonObject requestBody = context.getBodyAsJson();
-//
-//        // Now get the email from the requestBody JsonObject
-//        String email = requestBody.getString("email");
-//        if (email == null || email.trim().isEmpty()) {
-//            context.response().setStatusCode(400).end("Email is required");
-//            return;
-//        }
-//
-//        int finalScore = getFinalScoreForUser(email);
-//
-//        context.response()
-//                .putHeader("content-type", "application/json")
-//                .end(new JsonObject().put("finalScore", finalScore).encode());
-//    }
-
-
-    // Mock method to get the final score for a user
-// Replace this with your actual implementation.
-//    private int getFinalScoreForUser(String email) {
-//        // Here you would have the logic to calculate the final score or retrieve it from Redis
-//        // For the sake of this example, let's assume we are retrieving it from Redis.
-//        String userScoreKey = email + ":score";
-//        String scoreStr = jedis.get(userScoreKey);
-//        int score = 0;
-//        if (scoreStr != null) {
-//            score = Integer.parseInt(scoreStr);
-//            // Optionally, you can delete the user's score from Redis after retrieving it
-//            jedis.del(userScoreKey);
-//        }
-//        return score;
-//    }
-    private void validateAnswerHandler(RoutingContext context) {
-        JsonObject requestBody = context.getBodyAsJson();
-        String email = requestBody.getString("email");
-        int questionId = requestBody.getInteger("question_id");
-        int answerId = requestBody.getInteger("answer_id");
-
-        JsonObject response = quizService.validateAnswerAndManageScore(email, questionId, answerId);
-
-        context.response()
-                .putHeader("content-type", "application/json")
-                .end(response.encode());
-    }
-
-
-
 
     private void getRandomQuestionsHandler(RoutingContext context) {
-        String email = "ziad@gmail.com";
+        String email = context.request().getParam("email");
         String questionsJson = questionService.getRandomQuestions(email);
         context.response()
                 .putHeader("content-type", "application/json")
@@ -165,6 +80,50 @@ public class QuizApiVerticle extends AbstractVerticle {
                 .putHeader("content-type", "application/json")
                 .end(Json.encode(ExamQuestions));
     }
+
+    private void validateAnswer(RoutingContext context) {
+        // Extract email from the request
+        String email = context.request().getParam("email");
+        if (email == null || email.isEmpty()) {
+            context.response().setStatusCode(400).end("Email is required");
+            return;
+        }
+
+        // Extract answer from the request
+        String answer = context.request().getParam("answerId");
+        if (answer == null || answer.isEmpty()) {
+            context.response().setStatusCode(400).end("Answer is required");
+            return;
+        }
+        String questionId = context.request().getParam("questionId");
+        if (questionId == null || questionId.isEmpty()) {
+            context.response().setStatusCode(400).end("QuestionId is required");
+            return;
+        }
+
+        try {
+;
+            if (!   quizService.isUserValid(email)) {
+                context.response().setStatusCode(404).end("No questions found for this email");
+                return;
+            }
+
+
+            //call validateAnswerHandler
+            ExamQuestion nextQuestion = quizService.validateAnswerHandler(email, Integer.parseInt(questionId), Integer.parseInt(answer));
+            if(nextQuestion==null){
+               int score= quizService.getExamScore(email);
+                context.response().setStatusCode(404).end("your exam score is "+score+" out of 20");
+                return;
+            }
+            context.response()
+                    .putHeader("content-type", "application/json")
+                    .end( Json.encode(nextQuestion));
+        } catch (Exception e) {
+            context.response().setStatusCode(500).end("Internal Server Error: " + e.getMessage());
+        }
+    }
+
 
 
 }

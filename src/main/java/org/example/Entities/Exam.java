@@ -1,14 +1,19 @@
 package org.example.Entities;
 
+import java.util.List;
+
 public class Exam {
 
 
     private int id;
     private String email;
+    private int score;
+    private int examId;
     private String date;
     private String time;
     private int duration;
     private int totalMarks;
+    private List<ExamQuestion> questions;
 
     @Override
     public String toString() {
@@ -25,13 +30,14 @@ public class Exam {
     }
 
 
-    public Exam(int id, String email, String date, String time, int duration, int totalMarks) {
+    public Exam(int id, String email, String date, String time, int duration, int totalMarks, List<ExamQuestion> questions) {
         this.id = id;
         this.email = email;
         this.date = date;
         this.time = time;
         this.duration = duration;
         this.totalMarks = totalMarks;
+        this.questions = questions;
     }
 
 
@@ -70,5 +76,17 @@ public class Exam {
         return totalMarks;
     }
 
+    public void setId(int anInt) {
+        this.id = anInt;
+    }
+
+    public ExamQuestion[] getQuestions() {
+        return new ExamQuestion[0];
+
+    }
+
+    public int getId() {
+        return id;
+    }
 }
 

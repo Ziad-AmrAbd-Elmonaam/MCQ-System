@@ -1,9 +1,11 @@
 package org.example.database;
 
 import org.example.Entities.Exam;
+import org.example.Entities.ExamQuestion;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ExamDao {
@@ -18,6 +20,7 @@ public class ExamDao {
         System.out.println("Saving exam: " + exam);
         String sql = "INSERT INTO exams (email, date, time, duration, total_marks) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
             pstmt.setString(1, exam.getEmail());
             pstmt.setString(2, exam.getDate());
             pstmt.setString(3, exam.getTime());

@@ -34,6 +34,7 @@ public class ExamQuestion {
         this.answers = new ArrayList<>();
     }
 
+
     public int getId() {
         return questionId;
     }
@@ -82,8 +83,13 @@ public class ExamQuestion {
         this.mark = mark;
     }
 
+
     public void incrementAttempts() {
         this.attempts++;
+    }
+    public void addQuestionBackToPool ( int answerId) {
+        this.answers = this.answers.stream().filter(answer -> answer.getId() != answerId).toList();
+        this.attempts = 1;
     }
 
 

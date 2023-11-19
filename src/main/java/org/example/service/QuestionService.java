@@ -9,10 +9,12 @@ import redis.clients.jedis.Jedis;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class QuestionService {
+
+//    public static Dictionary<String, List<ExamQuestion>> userQuestions;
+
 
 
     private final QuestionDao questionDao;
@@ -22,42 +24,49 @@ public class QuestionService {
         this.questionDao = questionDao;
         this.jedis = jedis;
         this.examDao = examDao;
+
+
     }
     private final ExamDao examDao;
 
     public List<ExamQuestion> getAllQuestions() {
         return questionDao.getAllQuestions();
     }
+
+
+
     public String getRandomQuestions(String email) {
-        System.out.println("Email received in getRandomQuestions: " + email); // Debugging line
-
-        // Unique session key for this particular quiz instance
-        String sessionKey = email + ":" + UUID.randomUUID().toString();
-
-        String value;
-        if (jedis.exists(sessionKey)) {
-            value = jedis.get(sessionKey);
-        } else {
-            List<ExamQuestion> ExamQuestions = questionDao.getRandomQuestions(10);
-            value = Json.encode(ExamQuestions);
-
-            // Set the value in Redis with an expiration time
-            jedis.setex(sessionKey, 3600, value); // Expires after 1 hour
+        String redisData = null;
+        try {
+            redisData = jedis.get(email);
+        } catch (Exception e) {
+            System.err.println("Error retrieving data from Redis: " + e.getMessage());
+            // Handle the exception appropriately
         }
 
-        // Save to database
-        Exam exam = new Exam();
-        exam.setEmail(email);
-        System.out.println("Email after setting: " + exam.getEmail()); // Debugging line
-        exam.setDate(DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDateTime.now()));
-        exam.setTime(DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalDateTime.now()));
-        exam.setDuration(3600);
-
-
-        examDao.save(exam);
-
-        return value;
+        if (redisData != null && !redisData.isEmpty()) {
+            // Data exists in Redis, return it
+            return redisData;
+        } else {
+            // Data doesn't exist in Redis, fetch from database and store in Redis
+            List<ExamQuestion> examQuestions = questionDao.getRandomQuestions(10);
+            if (examQuestions.isEmpty()) {
+                // Handle the case where there are no questions
+                // For example, return a specific message or throw an exception
+            } else {
+                // Save the fetched questions in Redis
+                try {
+                    jedis.set(email, Json.encode(examQuestions));
+                } catch (Exception e) {
+                    System.err.println("Error storing data in Redis: " + e.getMessage());
+                    // Handle the exception appropriately
+                }
+            }
+            // Return the JSON representation of the questions
+            return Json.encode(examQuestions);
+        }
     }
+
 
 
 }

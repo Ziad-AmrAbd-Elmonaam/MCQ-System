@@ -29,6 +29,10 @@ public class ExamQuestionAnswer {
         public void setCorrect(boolean correct) {
             this.isCorrect = correct;
         }
+        public boolean isCorrectAnswer( int answerId) {
+            return isCorrect;
+        }
+
         public boolean isCorrect() {
             return isCorrect;
         }
