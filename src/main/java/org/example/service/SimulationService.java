@@ -34,7 +34,7 @@ public class SimulationService {
     public void simulateExamsForUsers() {
         // Generate 100 simulated users
         List<User> simulatedUsers = new ArrayList<>();
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 10; i++) {
             simulatedUsers.add(new User("user" + i + "@example.com"));
         }
 
@@ -44,6 +44,7 @@ public class SimulationService {
             String questionsJson = questionService.getRandomQuestions(email);
             List<ExamQuestion> examQuestions = deserializeQuestions(questionsJson);
             submitExam(email, examQuestions);
+            jedis.del(email); // Delete the questions from Redis
         });
     }
 
@@ -60,19 +61,21 @@ public class SimulationService {
 
     private void submitExam(String email, List<ExamQuestion> examQuestions) {
         int score = 0;
-
-        for (ExamQuestion question : examQuestions) {
+ExamQuestion question = examQuestions.get(0);
+        while (true) {
             List<ExamQuestionAnswer> answers = question.getAnswers();
             int randomIndex = random.nextInt(answers.size()); // Get a random index
             ExamQuestionAnswer randomAnswer = answers.get(randomIndex); // Get the answer from that index
             int answerId = randomAnswer.getId(); // Use the ID of this answer
-            quizService.validateAnswerHandler(email, question.getId(), answerId);
-            if (randomAnswer.isCorrect()) {
-                score += question.getMark();
+        question= quizService.validateAnswerHandler(email, question.getId(), answerId);
+            if (question == null) {
+                break;
             }
         }
 
         // Save the exam result
+        // set score from redis
+         score= quizService.getExamScore(email);
         int examId = quizService.getExamId(email);
         examDao.save(email, score, examId);
     }

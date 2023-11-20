@@ -45,7 +45,7 @@ public class ExamHistoryDao {
         public void save(int examId, int questionId, int answerId, int mark) {
         String sql = "INSERT INTO exam_history (date, exam_id, question_id, answer_id, mark) " +
                 "SELECT * FROM (SELECT ? AS date, ? AS exam_id, ? AS question_id, ? AS answer_id, ? AS mark) AS tmp " +
-                "WHERE NOT EXISTS (SELECT 1 FROM exam_history WHERE question_id = ?)";
+                "WHERE NOT EXISTS (SELECT 1 FROM exam_history WHERE question_id = ? AND exam_id =?)";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, String.valueOf(java.time.LocalDate.now()));
@@ -54,6 +54,7 @@ public class ExamHistoryDao {
             pstmt.setInt(4, answerId);
             pstmt.setInt(5, mark);
             pstmt.setInt(6, questionId);
+            pstmt.setInt(7, examId);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

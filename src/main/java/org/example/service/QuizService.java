@@ -86,6 +86,7 @@ public class QuizService {
             else {
 
                 examDao.save(email, getExamScore(email), getExamId(email));
+
                 return null;
             }
 
@@ -135,12 +136,5 @@ public class QuizService {
         List<ExamQuestion> examQuestionList = getQuestionFromCache(email);
         return   examQuestionList.get(0).getExamId();
     }
-    public void deleteExamFromRedis(String email) {
-        try {
-            jedis.del(email);
-        } catch (Exception e) {
-            System.err.println("Error deleting exam from Redis: " + e.getMessage());
-            // Handle the exception appropriately
-        }
-    }
+
 }

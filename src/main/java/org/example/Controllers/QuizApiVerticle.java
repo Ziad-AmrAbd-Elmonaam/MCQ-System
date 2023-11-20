@@ -135,7 +135,8 @@ public class QuizApiVerticle extends AbstractVerticle {
             ExamQuestion nextQuestion = quizService.validateAnswerHandler(email, Integer.parseInt(questionId), Integer.parseInt(answer));
             if(nextQuestion==null){
                int score= quizService.getExamScore(email);
-                context.response().setStatusCode(404).end("your exam score is "+score+" out of 20");
+                context.response().setStatusCode(200).end("your exam score is "+score+" out of 20");
+
                 return;
             }
             context.response()
