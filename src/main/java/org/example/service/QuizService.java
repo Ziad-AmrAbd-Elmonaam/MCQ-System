@@ -1,57 +1,61 @@
 package org.example.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import org.example.Entities.Exam;
 import org.example.Entities.ExamQuestion;
 import org.example.Entities.ExamQuestionAnswer;
-import org.example.database.AnswerDao;
+import org.example.database.ExamDao;
+import org.example.database.ExamHistoryDao;
 import redis.clients.jedis.Jedis;
 
 import java.util.List;
 
 public class QuizService {
     private final Jedis jedis;
-    private final AnswerDao answerDao;
+    private final ExamDao examDao;
+    private final ExamHistoryDao examHistoryDao;
 
-    public QuizService(Jedis jedis, AnswerDao answerDao) {
+    private Exam exam;
+    public QuizService(Jedis jedis, ExamDao examDao, ExamHistoryDao examHistoryDao) {
         this.jedis = jedis;
-        this.answerDao = answerDao;
+        this.examDao = examDao;
+        this.examHistoryDao = examHistoryDao;
     }
 
-    public JsonObject validateAnswerAndManageScore(String email, int questionId, int answerId) {
-        boolean isCorrect = answerDao.isAnswerCorrect(questionId, answerId);
-        int score = updateScoreAndManageQuestion(email, questionId, isCorrect, answerId);
 
-        return new JsonObject()
-                .put("isCorrect", isCorrect)
-                .put("score", score);
-    }
 
     public ExamQuestion validateAnswerHandler(String email, int questionId, int answerId) {
+
+
         try {
             List<ExamQuestion> examQuestionList = getQuestionFromCache(email);
 
             ExamQuestion question = examQuestionList.stream().filter(x -> x.getId() == questionId).findFirst().orElse(null);
             //check if null throw exception
-            if (question == null)
-                throw new Exception("Question not found");
+            if (question == null) {
 
+                throw new Exception("Invalid question: Question not found in the list of questions");
+            }
+            int questoinIndex = examQuestionList.indexOf(question);
 
-            int questoinIndex =
-                    examQuestionList.indexOf(question);
             // Validate the answer
             boolean isCorrect = question.getAnswers().stream()
                     .filter(answer -> answer.getId() == answerId)
                     .findFirst()
                     .map(ExamQuestionAnswer::isCorrect)
                     .orElse(false);
+            //check if answer is found in the list of possible answers
+            boolean answerExists = question.getAnswers().stream()
+                    .anyMatch(answer -> answer.getId() == answerId);
+
+            if (!answerExists) {
+                throw new Exception("Invalid answer: Answer not found in the list of possible answers");
+            }
 
             // Return the result
             if (!isCorrect) {
@@ -69,44 +73,33 @@ public class QuizService {
                     question.setMark(1);
 
                 }
-                //updat value in jsonarray
 
                 examQuestionList.set(questoinIndex, question);
                 updateRedis(email, examQuestionList);
             }
 
-//check index is valid
+
+            examHistoryDao.save(getExamId(email),questionId,answerId,question.getMark());
 
             if (questoinIndex + 1 < examQuestionList.size())
                 return (ExamQuestion) examQuestionList.get(questoinIndex + 1);
-            else
+            else {
+
+                examDao.save(email, getExamScore(email), getExamId(email));
                 return null;
+            }
+
+            //save examId ,email,score to table Exam in database
+
+
+
         } catch (Exception e) {
             System.err.println("Error retrieving data from Redis: " + e.getMessage());
-            // Handle the exception appropriately
+
         }
         return null;
     }
 
-    private int updateScoreAndManageQuestion(String email, int questionId, boolean isCorrect, int answerId) {
-        String userQuestionKey = email + ":question:" + questionId;
-        String userScoreKey = email + ":score";
-        int attempts = jedis.incr(userQuestionKey).intValue();
-
-        if (isCorrect) {
-            int score = (attempts == 1) ? 2 : 1;
-            jedis.incrBy(userScoreKey, score);
-            jedis.del(userQuestionKey); // Reset attempts for this question
-            return score;
-        } else {
-            if (attempts == 1) {
-                addQuestionBackToPool(email, questionId, answerId); // Use answerId here
-            } else {
-                jedis.del(userQuestionKey); // Reset attempts for this question
-            }
-        }
-        return 0;
-    }
 
     private void updateRedis(String user, List<ExamQuestion> examQuestions) {
 
@@ -145,5 +138,18 @@ public class QuizService {
     public int getExamScore(String email) {
         List<ExamQuestion> examQuestionList = getQuestionFromCache(email);
      return   examQuestionList.stream().mapToInt(ExamQuestion::getMark).sum();
+    }
+
+    public int getExamId(String email) {
+        List<ExamQuestion> examQuestionList = getQuestionFromCache(email);
+        return   examQuestionList.get(0).getExamId();
+    }
+    public void deleteExamFromRedis(String email) {
+        try {
+            jedis.del(email);
+        } catch (Exception e) {
+            System.err.println("Error deleting exam from Redis: " + e.getMessage());
+            // Handle the exception appropriately
+        }
     }
 }

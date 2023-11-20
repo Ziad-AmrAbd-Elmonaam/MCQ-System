@@ -3,15 +3,13 @@ package org.example.Controllers;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
+import org.example.Entities.ExamHistory;
 import org.example.Entities.ExamQuestion;
-import org.example.Entities.ExamQuestionAnswer;
-import org.example.database.AnswerDao;
 import org.example.database.ExamDao;
+import org.example.database.ExamHistoryDao;
 import org.example.database.QuestionDao;
 import org.example.service.QuestionService;
 import org.example.service.QuizService;
@@ -21,24 +19,21 @@ import java.sql.*;
 import java.util.List;
 
 public class QuizApiVerticle extends AbstractVerticle {
-    private ExamDao examDao;
+    private ExamHistoryDao examHistoryDao;
     private QuestionService questionService;
     private QuizService quizService;
-    private Jedis jedis ;
-
-    private QuestionDao questionDao;
-    private AnswerDao answerDao;
 
     @Override
     public void start(Promise<Void> startPromise) throws Exception {
-        this.jedis= new Jedis("localhost", 6379);
+        Jedis jedis = new Jedis("localhost", 6379);
 
         Connection connection = DriverManager.getConnection("jdbc:sqlite:database/database.db");
-        this.examDao = new ExamDao(connection);
-        this.questionDao = new QuestionDao(connection); // Initialize QuestionDao with the connection
-        this.answerDao = new AnswerDao(connection);
-        this.questionService = new QuestionService(questionDao, jedis, examDao);
-        this.quizService = new QuizService(jedis, answerDao);
+        ExamDao examDao = new ExamDao(connection);
+        QuestionDao questionDao = new QuestionDao(connection); // Initialize QuestionDao with the connection
+        this.examHistoryDao = new ExamHistoryDao(connection);
+        this.questionService = new QuestionService(questionDao, jedis, examDao, examHistoryDao);
+        this.quizService = new QuizService(jedis, examDao,examHistoryDao);
+
 
 
 
@@ -46,9 +41,11 @@ public class QuizApiVerticle extends AbstractVerticle {
         Router router = Router.router(vertx);
 
         router.route().handler(BodyHandler.create());
-        router.get("/questions").handler(this::getAllQuestions);
+//        router.get("/questions").handler(this::getAllQuestions);
         router.get("/random-questions/:email").handler(this::getRandomQuestionsHandler);
         router.get("/answer-question/:email/:questionId/:answerId").handler(this::validateAnswer);
+        //get exam history
+        router.get("/exam-history/:email").handler(this::getExamHistory);
 
 
 
@@ -74,12 +71,22 @@ public class QuizApiVerticle extends AbstractVerticle {
 
 
 
-    private void getAllQuestions(RoutingContext context) {
-        List<ExamQuestion> ExamQuestions = questionService.getAllQuestions();
+
+//    private void getAllQuestions(RoutingContext context) {
+//        List<ExamQuestion> ExamQuestions = questionService.getAllQuestions();
+//        context.response()
+//                .putHeader("content-type", "application/json")
+//                .end(Json.encode(ExamQuestions));
+//    }
+
+    private void getExamHistory (RoutingContext context) {
+        String email = context.request().getParam("email");
+        ExamHistory examHistory = examHistoryDao.getExamHistory(email);
         context.response()
                 .putHeader("content-type", "application/json")
-                .end(Json.encode(ExamQuestions));
+                .end(Json.encode(examHistory));
     }
+
 
     private void validateAnswer(RoutingContext context) {
         // Extract email from the request
@@ -114,6 +121,7 @@ public class QuizApiVerticle extends AbstractVerticle {
             if(nextQuestion==null){
                int score= quizService.getExamScore(email);
                 context.response().setStatusCode(404).end("your exam score is "+score+" out of 20");
+                quizService.deleteExamFromRedis(email);
                 return;
             }
             context.response()

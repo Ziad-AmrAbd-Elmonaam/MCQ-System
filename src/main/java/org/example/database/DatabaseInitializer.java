@@ -13,12 +13,19 @@ import java.sql.Statement;
         public static void generateDatabase() {
             String url = "jdbc:sqlite:database/database.db";
             String sqlCreateExams = "CREATE TABLE IF NOT EXISTS exams (" +
-                    "id INTEGER PRIMARY KEY," +
+                    "examId INTEGER NOT NULL," +
                     "email TEXT NOT NULL," +
+                    "score INTEGER NOT NULL);";
+            String sqlCreateExamHistory = "CREATE TABLE IF NOT EXISTS exam_history (" +
                     "date TEXT NOT NULL," +
-                    "time TEXT NOT NULL," +
-                    "duration INTEGER NOT NULL," +
-                    "total_marks INTEGER NOT NULL);";
+                    "id INTEGER PRIMARY KEY," +
+                    "exam_id INTEGER NOT NULL," +
+                    "question_id INTEGER NOT NULL," +
+                    "answer_id INTEGER NOT NULL," +
+                    "mark INTEGER NOT NULL," +
+                    "FOREIGN KEY (exam_id) REFERENCES exams (examId)," +
+                    "FOREIGN KEY (question_id) REFERENCES questions (id)," +
+                    "FOREIGN KEY (answer_id) REFERENCES answers (id));";
 
             String sqlCreateQuestions = "CREATE TABLE IF NOT EXISTS questions (" +
                     "id INTEGER PRIMARY KEY," +
@@ -33,6 +40,7 @@ import java.sql.Statement;
 
             try (Connection conn = DriverManager.getConnection(url);
                  Statement stmt = conn.createStatement()) {
+                stmt.execute(sqlCreateExamHistory);
                 stmt.execute(sqlCreateQuestions);
                 stmt.execute(sqlCreateAnswers);
                 stmt.execute(sqlCreateExams);

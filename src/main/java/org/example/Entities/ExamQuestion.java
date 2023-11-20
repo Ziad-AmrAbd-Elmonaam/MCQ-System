@@ -12,10 +12,7 @@ public class ExamQuestion {
     private List<ExamQuestionAnswer> answers;
 
 
-    public ExamQuestion() {
 
-        this.answers = new ArrayList<>();
-    }
 
 
     // Parameterized constructor
@@ -28,6 +25,9 @@ public class ExamQuestion {
         this.mark = mark;
     }
 
+    public ExamQuestion() {
+        this.answers = new ArrayList<>();
+    }
     public ExamQuestion(int questionId, String questionTitle) {
         this.questionId = questionId;
         this.title = questionTitle;
@@ -67,6 +67,7 @@ public class ExamQuestion {
     public int getExamId() {
         return examId;
     }
+
     public void setExamId(int examId) {
         this.examId = examId;
     }

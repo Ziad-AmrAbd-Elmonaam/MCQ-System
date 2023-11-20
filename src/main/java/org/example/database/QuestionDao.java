@@ -41,70 +41,64 @@
 
 
         // Method to retrieve all questions from the database
-        public List<ExamQuestion> getAllQuestions() {
-            List<ExamQuestion> ExamQuestions = new ArrayList<>();
-            String sql = "SELECT * FROM questions";
-            try (PreparedStatement statement = connection.prepareStatement(sql);
-                 ResultSet rs = statement.executeQuery()) {
-
-                while (rs.next()) {
-                    int id = rs.getInt("id");
-                    String title = rs.getString("title");
-
-                    ExamQuestion examQuestion = new ExamQuestion(id, title, 0, 0, 0);
-                    ExamQuestions.add(examQuestion);
-                }
-            } catch (SQLException e) {
-                // Handle the exception more gracefully, log it, or rethrow as needed
-                e.printStackTrace();
-            }
-            return ExamQuestions;
-        }
+//        public List<ExamQuestion> getAllQuestions() {
+//            List<ExamQuestion> ExamQuestions = new ArrayList<>();
+//            String sql = "SELECT * FROM questions";
+//            try (PreparedStatement statement = connection.prepareStatement(sql);
+//                 ResultSet rs = statement.executeQuery()) {
+//
+//                while (rs.next()) {
+//                    int id = rs.getInt("id");
+//                    String title = rs.getString("title");
+//
+//                    ExamQuestion examQuestion = new ExamQuestion(id, title, 0, 0, 0);
+//                    ExamQuestions.add(examQuestion);
+//                }
+//            } catch (SQLException e) {
+//                // Handle the exception more gracefully, log it, or rethrow as needed
+//                e.printStackTrace();
+//            }
+//            return ExamQuestions;
+//        }
 
         public List<ExamQuestion> getRandomQuestions(int limit) {
             List<ExamQuestion> randomExamQuestions = new ArrayList<>();
-            String sql = "SELECT q.id AS questionID, "
-                    + "q.title AS questionTitle, "
-                    + "a.id AS answerID, "
-                    + "a.title AS answerTitle, "
-                    + "a.is_correct AS answerCorrect "
-                    + "FROM (SELECT id, title "
-                    + "FROM questions "
-                    + "ORDER BY RANDOM() "
-                    + "LIMIT ?) AS q "
-                    + "LEFT JOIN (SELECT id, question_id, title, is_correct "
-                    + "FROM answers "
-                    + "ORDER BY RANDOM()) AS a ON q.id = a.question_id ";
+            String sql = "SELECT (SELECT MAX(IFNULL(examId, 0)) FROM exams) AS initialExamId, "
+                    + "q.id AS questionID, q.title AS questionTitle, "
+                    + "a.id AS answerID, a.title AS answerTitle, a.is_correct AS answerCorrect "
+                    + "FROM (SELECT id, title FROM questions ORDER BY RANDOM() LIMIT ?) AS q "
+                    + "LEFT JOIN (SELECT id, question_id, title, is_correct, "
+                    + "ROW_NUMBER() OVER (PARTITION BY question_id ORDER BY RANDOM()) AS rn "
+                    + "FROM answers) AS a ON q.id = a.question_id "
+                    + "ORDER BY q.id, a.rn";
 
 
-
-            try (PreparedStatement statement = connection.prepareStatement( sql)) {
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setInt(1, limit);
 
                 try (ResultSet rs = statement.executeQuery()) {
                     Map<Integer, ExamQuestion> questionsMap = new HashMap<>();
+                    int examId = 0;
+                        examId = rs.getInt("initialExamId") + 1;
+
                     while (rs.next()) {
+
+
                         int questionId = rs.getInt("questionID");
                         String questionTitle = rs.getString("questionTitle");
                         int answerId = rs.getInt("answerID");
                         String answerTitle = rs.getString("answerTitle");
                         boolean answerCorrect = rs.getBoolean("answerCorrect");
 
-                        // Check if the question is already in the map
                         ExamQuestion examQuestion = questionsMap.get(questionId);
                         if (examQuestion == null) {
-
-                            examQuestion = new ExamQuestion(questionId, questionTitle);
+                            examQuestion = new ExamQuestion(questionId, questionTitle, examId, 0, 0);
                             questionsMap.put(questionId, examQuestion);
                         }
 
-                        // Add the answer to the question
                         ExamQuestionAnswer answer = new ExamQuestionAnswer(answerId, answerTitle, answerCorrect, questionId);
-                        examQuestion.addAnswer(answer); // Ensure that Question class has a method to add answers
+                        examQuestion.addAnswer(answer);
                     }
-
-
-                    // Convert the map values to a list
                     randomExamQuestions.addAll(questionsMap.values());
                 }
             } catch (SQLException e) {
@@ -112,6 +106,7 @@
             }
             return randomExamQuestions;
         }
+
 
 
 
