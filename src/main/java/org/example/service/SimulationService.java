@@ -33,10 +33,7 @@ public class SimulationService {
     }
     public void simulateExamsForUsers() {
         // Generate 100 simulated users
-        List<User> simulatedUsers = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            simulatedUsers.add(new User("user" + i + "@example.com"));
-        }
+        List<User> simulatedUsers = generateRandomUsers(10); // Generate 10 random users
 
         // Assign and submit exams for each simulated user
         simulatedUsers.forEach(user -> {
@@ -48,6 +45,13 @@ public class SimulationService {
         });
     }
 
+    private List<User> generateRandomUsers( int numberOfUsers) {
+        List<User> users = new ArrayList<>();
+        for (int i = 0; i < numberOfUsers; i++) {
+            users.add(new User(generateRandomEmail()));
+        }
+        return users;
+    }
     private List<ExamQuestion> deserializeQuestions(String json) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -111,5 +115,18 @@ ExamQuestion question = examQuestions.get(0);
             e.printStackTrace();
             return null;
         }
+    }
+    private String generateRandomEmail() {
+        String alphabet = "abcdefghijklmnopqrstuvwxyz";
+        String numbers = "0123456789";
+        String alphaNumeric = alphabet + numbers;
+        StringBuilder sb = new StringBuilder();
+        Random rnd = new Random();
+        for (int i = 0; i < 100; i++) { // Generate 10-character long username part
+            int index = rnd.nextInt(alphaNumeric.length());
+            sb.append(alphaNumeric.charAt(index));
+        }
+        sb.append("@example.com");
+        return sb.toString();
     }
 }
