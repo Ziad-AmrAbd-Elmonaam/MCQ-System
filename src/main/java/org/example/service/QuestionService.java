@@ -14,10 +14,6 @@ import java.util.*;
 
 public class QuestionService {
 
-//    public static Dictionary<String, List<ExamQuestion>> userQuestions;
-
-
-
     private final QuestionDao questionDao;
     private final Jedis jedis;
     private final ExamHistoryDao examHistoryDao;
@@ -70,6 +66,9 @@ public class QuestionService {
             return "Error processing request"; // Placeholder error message
         }
     }
+
+
+
 
 
 

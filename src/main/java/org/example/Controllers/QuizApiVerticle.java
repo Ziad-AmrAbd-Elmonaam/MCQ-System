@@ -13,12 +13,14 @@ import org.example.database.ExamHistoryDao;
 import org.example.database.QuestionDao;
 import org.example.service.QuestionService;
 import org.example.service.QuizService;
+import org.example.service.SimulationService;
 import redis.clients.jedis.Jedis;
 
 import java.sql.*;
 import java.util.List;
 
 public class QuizApiVerticle extends AbstractVerticle {
+    private ExamDao examDao;
     private ExamHistoryDao examHistoryDao;
     private QuestionService questionService;
     private QuizService quizService;
@@ -33,6 +35,8 @@ public class QuizApiVerticle extends AbstractVerticle {
         this.examHistoryDao = new ExamHistoryDao(connection);
         this.questionService = new QuestionService(questionDao, jedis, examDao, examHistoryDao);
         this.quizService = new QuizService(jedis, examDao,examHistoryDao);
+        this.examDao= examDao;
+
 
 
 
@@ -46,6 +50,8 @@ public class QuizApiVerticle extends AbstractVerticle {
         router.get("/answer-question/:email/:questionId/:answerId").handler(this::validateAnswer);
         //get exam history
         router.get("/exam-history/:email").handler(this::getExamHistory);
+        router.get("/simulate-exams").handler(this::simulateExamsHandler);
+
 
 
 
@@ -60,6 +66,15 @@ public class QuizApiVerticle extends AbstractVerticle {
         });
     }
 
+
+    private void simulateExamsHandler(RoutingContext context) {
+        SimulationService simulationService = new SimulationService(questionService, quizService, examDao, examHistoryDao , new Jedis("localhost", 6379));
+              simulationService.simulateExamsForUsers();
+
+        context.response()
+                .putHeader("content-type", "application/json")
+                .end("{\"message\": \"Simulation started\"}");
+    }
     private void getRandomQuestionsHandler(RoutingContext context) {
         String email = context.request().getParam("email");
         String questionsJson = questionService.getRandomQuestions(email);
@@ -121,7 +136,6 @@ public class QuizApiVerticle extends AbstractVerticle {
             if(nextQuestion==null){
                int score= quizService.getExamScore(email);
                 context.response().setStatusCode(404).end("your exam score is "+score+" out of 20");
-                quizService.deleteExamFromRedis(email);
                 return;
             }
             context.response()

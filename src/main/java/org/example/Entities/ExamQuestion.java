@@ -5,6 +5,7 @@ import java.util.List;
 
 public class ExamQuestion {
     private int questionId;
+
     public int examId;
     private int attempts;
     private int mark;

@@ -121,16 +121,7 @@ public class QuizService {
 
     }
 
-    private void addQuestionBackToPool(String email, int questionId, int incorrectAnswerId) {
-        // Example key for user's question pool
-        String userQuestionPoolKey = email + ":questionPool";
 
-        JsonObject questionInfo = new JsonObject()
-                .put("questionId", questionId)
-                .put("excludeAnswerId", incorrectAnswerId);
-
-        jedis.rpush(userQuestionPoolKey, questionInfo.encode());
-    }
     public boolean     isUserValid(String email) {
         return getQuestionFromCache(email) != null;
     }
