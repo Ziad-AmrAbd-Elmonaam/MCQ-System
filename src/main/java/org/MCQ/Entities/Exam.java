@@ -1,6 +1,4 @@
-package org.example.Entities;
-
-import java.util.List;
+package org.MCQ.Entities;
 
 public class Exam {
 

@@ -1,11 +1,7 @@
-package org.example.database;
-
-import org.example.Entities.Exam;
-import org.example.Entities.ExamQuestion;
+package org.MCQ.database;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ExamDao {

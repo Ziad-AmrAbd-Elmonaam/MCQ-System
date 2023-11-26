@@ -1,7 +1,7 @@
-    package org.example.database;
+    package org.MCQ.database;
 
-    import org.example.Entities.ExamQuestionAnswer;
-    import org.example.Entities.ExamQuestion;
+    import org.MCQ.Entities.ExamQuestionAnswer;
+    import org.MCQ.Entities.ExamQuestion;
 
     import java.sql.Connection;
     import java.sql.PreparedStatement;

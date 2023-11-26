@@ -1,4 +1,4 @@
-package org.example.Controllers;
+package org.MCQ.Controllers;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
@@ -6,55 +6,57 @@ import io.vertx.core.json.Json;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
-import org.example.Entities.ExamHistory;
-import org.example.Entities.ExamQuestion;
-import org.example.database.ExamDao;
-import org.example.database.ExamHistoryDao;
-import org.example.database.QuestionDao;
-import org.example.service.QuestionService;
-import org.example.service.QuizService;
-import org.example.service.SimulationService;
+import org.MCQ.Entities.ExamHistory;
+import org.MCQ.Entities.ExamQuestion;
+import org.MCQ.database.ExamDao;
+import org.MCQ.database.ExamHistoryDao;
+import org.MCQ.database.QuestionDao;
+import org.MCQ.service.QuestionService;
+import org.MCQ.service.QuizService;
+import org.MCQ.service.SimulationService;
 import redis.clients.jedis.Jedis;
 
 import java.sql.*;
-import java.util.List;
 
-public class QuizApiVerticle extends AbstractVerticle {
+public class quizApi extends AbstractVerticle {
     private ExamDao examDao;
     private ExamHistoryDao examHistoryDao;
     private QuestionService questionService;
     private QuizService quizService;
+    private Jedis jedis;
+    private Connection connection;
 
     @Override
-    public void start(Promise<Void> startPromise) throws Exception {
-        Jedis jedis = new Jedis("localhost", 6379);
+    public void start(Promise<Void> startPromise) {
+        try {
+            initializeDatabaseConnection();
+            initializeServices();
+            setUpRouter(startPromise);
+        } catch (SQLException e) {
+            startPromise.fail("Database connection error: " + e.getMessage());
+        }
+    }
+    private void initializeDatabaseConnection() throws SQLException {
+        connection = DriverManager.getConnection("jdbc:sqlite:database/database.db");
+        examDao = new ExamDao(connection);
+        QuestionDao questionDao = new QuestionDao(connection);
+        examHistoryDao = new ExamHistoryDao(connection);
+    }
 
-        Connection connection = DriverManager.getConnection("jdbc:sqlite:database/database.db");
-        ExamDao examDao = new ExamDao(connection);
-        QuestionDao questionDao = new QuestionDao(connection); // Initialize QuestionDao with the connection
-        this.examHistoryDao = new ExamHistoryDao(connection);
-        this.questionService = new QuestionService(questionDao, jedis, examDao, examHistoryDao);
-        this.quizService = new QuizService(jedis, examDao,examHistoryDao);
-        this.examDao= examDao;
+    private void initializeServices() {
+        jedis = new Jedis("localhost", 6379);
+        questionService = new QuestionService(new QuestionDao(connection), jedis, examDao, examHistoryDao);
+        quizService = new QuizService(jedis, examDao, examHistoryDao);
+    }
 
-
-
-
-
-
+    private void setUpRouter(Promise<Void> startPromise) {
         Router router = Router.router(vertx);
 
         router.route().handler(BodyHandler.create());
-//        router.get("/questions").handler(this::getAllQuestions);
         router.get("/random-questions/:email").handler(this::getRandomQuestionsHandler);
         router.get("/answer-question/:email/:questionId/:answerId").handler(this::validateAnswer);
-        //get exam history
         router.get("/exam-history/:email").handler(this::getExamHistory);
         router.get("/simulate-exams").handler(this::simulateExamsHandler);
-
-
-
-
 
         vertx.createHttpServer().requestHandler(router).listen(8080, http -> {
             if (http.succeeded()) {
@@ -136,6 +138,7 @@ public class QuizApiVerticle extends AbstractVerticle {
             if(nextQuestion==null){
                int score= quizService.getExamScore(email);
                 context.response().setStatusCode(200).end("your exam score is "+score+" out of 20");
+                jedis.del(email);
 
                 return;
             }
@@ -144,6 +147,15 @@ public class QuizApiVerticle extends AbstractVerticle {
                     .end( Json.encode(nextQuestion));
         } catch (Exception e) {
             context.response().setStatusCode(500).end("Internal Server Error: " + e.getMessage());
+        }
+    }
+    @Override
+    public void stop() throws Exception {
+        if (connection != null && !connection.isClosed()) {
+            connection.close();
+        }
+        if (jedis != null && jedis.isConnected()) {
+            jedis.close();
         }
     }
 

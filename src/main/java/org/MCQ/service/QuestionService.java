@@ -1,15 +1,12 @@
-package org.example.service;
+package org.MCQ.service;
 
 import io.vertx.core.json.Json;
-import org.example.Entities.Exam;
-import org.example.Entities.ExamQuestion;
-import org.example.database.ExamDao;
-import org.example.database.ExamHistoryDao;
-import org.example.database.QuestionDao;
+import org.MCQ.Entities.ExamQuestion;
+import org.MCQ.database.ExamDao;
+import org.MCQ.database.ExamHistoryDao;
+import org.MCQ.database.QuestionDao;
 import redis.clients.jedis.Jedis;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class QuestionService {

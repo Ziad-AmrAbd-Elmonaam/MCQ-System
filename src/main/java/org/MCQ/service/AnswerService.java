@@ -1,4 +1,4 @@
-package org.example.service;
+package org.MCQ.service;
 
 public class AnswerService {
 

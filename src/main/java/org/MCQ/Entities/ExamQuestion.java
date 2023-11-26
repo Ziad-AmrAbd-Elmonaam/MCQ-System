@@ -1,4 +1,4 @@
-package org.example.Entities;
+package org.MCQ.Entities;
 
 import java.util.ArrayList;
 import java.util.List;

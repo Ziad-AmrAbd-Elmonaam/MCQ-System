@@ -1,6 +1,5 @@
-package org.example.Entities;
+package org.MCQ.Entities;
 
-import java.sql.Date; // Ensure you're using the correct Date class as per your requirements
 import java.util.ArrayList;
 import java.util.List;
 

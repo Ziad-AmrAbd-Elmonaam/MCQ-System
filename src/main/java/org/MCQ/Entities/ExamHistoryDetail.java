@@ -1,6 +1,4 @@
-package org.example.Entities;
-
-import java.sql.Date; // Ensure you're using the correct Date class as per your requirements
+package org.MCQ.Entities;
 
 public class ExamHistoryDetail {
     private String date;

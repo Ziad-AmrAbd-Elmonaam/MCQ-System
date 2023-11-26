@@ -1,13 +1,11 @@
-package org.example.database;
+package org.MCQ.database;
 
-import org.example.Entities.ExamHistory;
-import org.example.Entities.ExamQuestion;
+import org.MCQ.Entities.ExamHistory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 public class ExamHistoryDao {
     private Connection connection;

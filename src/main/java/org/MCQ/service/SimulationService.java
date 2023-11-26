@@ -1,13 +1,13 @@
-package org.example.service;
+package org.MCQ.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Random;
-import org.example.Entities.ExamQuestion;
-import org.example.Entities.ExamQuestionAnswer;
-import org.example.Entities.User;
-import org.example.database.ExamDao;
-import org.example.database.ExamHistoryDao;
+import org.MCQ.Entities.ExamQuestion;
+import org.MCQ.Entities.ExamQuestionAnswer;
+import org.MCQ.Entities.User;
+import org.MCQ.database.ExamDao;
+import org.MCQ.database.ExamHistoryDao;
 import redis.clients.jedis.Jedis;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ public class SimulationService {
     private Jedis jedis;
 
     ExamHistoryDao examHistoryDao;
-    private QuestionService questionService;
+    private final QuestionService questionService;
     private QuizService quizService;
     private ExamDao examDao;
 
@@ -29,11 +29,11 @@ public class SimulationService {
         this.quizService = quizService;
         this.examDao = examDao;
         this.examHistoryDao = examHistoryDao;
-        this.jedis = jedis; // Initialize jedis here
+        this.jedis = jedis;
     }
     public void simulateExamsForUsers() {
         // Generate 100 simulated users
-        List<User> simulatedUsers = generateRandomUsers(10); // Generate 10 random users
+        List<User> simulatedUsers = generateRandomUsers(); // Generate 10 random users
 
         // Assign and submit exams for each simulated user
         simulatedUsers.forEach(user -> {
@@ -45,9 +45,9 @@ public class SimulationService {
         });
     }
 
-    private List<User> generateRandomUsers( int numberOfUsers) {
+    private List<User> generateRandomUsers() {
         List<User> users = new ArrayList<>();
-        for (int i = 0; i < numberOfUsers; i++) {
+        for (int i = 0; i < 1000; i++) {
             users.add(new User(generateRandomEmail()));
         }
         return users;
