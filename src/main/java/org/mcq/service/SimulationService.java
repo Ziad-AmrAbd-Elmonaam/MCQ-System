@@ -1,13 +1,13 @@
-package org.MCQ.service;
+package org.mcq.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Random;
-import org.MCQ.Entities.ExamQuestion;
-import org.MCQ.Entities.ExamQuestionAnswer;
-import org.MCQ.Entities.User;
-import org.MCQ.database.ExamDao;
-import org.MCQ.database.ExamHistoryDao;
+import org.mcq.entities.ExamQuestion;
+import org.mcq.entities.ExamQuestionAnswer;
+import org.mcq.entities.User;
+import org.mcq.dao.ExamDao;
+import org.mcq.dao.ExamHistoryDao;
 import redis.clients.jedis.Jedis;
 
 import java.io.IOException;

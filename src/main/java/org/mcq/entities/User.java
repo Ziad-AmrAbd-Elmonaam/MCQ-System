@@ -1,4 +1,4 @@
-package org.MCQ.Entities;
+package org.mcq.entities;
 
 public class User {
     private String email; // Email address of the user

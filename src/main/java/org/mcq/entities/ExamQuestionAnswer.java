@@ -1,4 +1,4 @@
-package org.MCQ.Entities;
+package org.mcq.entities;
 
 public class ExamQuestionAnswer {
     private  int id;

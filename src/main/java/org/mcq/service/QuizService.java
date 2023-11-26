@@ -1,15 +1,15 @@
-package org.MCQ.service;
+package org.mcq.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.vertx.core.json.Json;
-import org.MCQ.Entities.Exam;
-import org.MCQ.Entities.ExamQuestion;
-import org.MCQ.Entities.ExamQuestionAnswer;
-import org.MCQ.database.ExamDao;
-import org.MCQ.database.ExamHistoryDao;
+import org.mcq.entities.Exam;
+import org.mcq.entities.ExamQuestion;
+import org.mcq.entities.ExamQuestionAnswer;
+import org.mcq.dao.ExamDao;
+import org.mcq.dao.ExamHistoryDao;
 import redis.clients.jedis.Jedis;
 
 import java.util.List;

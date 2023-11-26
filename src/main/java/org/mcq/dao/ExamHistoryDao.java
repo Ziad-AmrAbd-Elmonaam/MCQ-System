@@ -1,6 +1,6 @@
-package org.MCQ.database;
+package org.mcq.dao;
 
-import org.MCQ.Entities.ExamHistory;
+import org.mcq.entities.ExamHistory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ExamHistoryDao {
-    private Connection connection;
+    private final Connection connection;
     public ExamHistoryDao(Connection connection) {
         this.connection = connection;
     }

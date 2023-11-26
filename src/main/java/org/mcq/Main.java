@@ -1,8 +1,8 @@
-package org.MCQ;
+package org.mcq;
 
 import io.vertx.core.Vertx;
-import org.MCQ.Controllers.quizApi;
-import org.MCQ.database.DatabaseInitializer;
+import org.mcq.controller.QuizApi;
+import org.mcq.database.InsertJsonDataToDatabase;
 
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
@@ -14,10 +14,10 @@ public class Main {
 
 
         System.out.println("working");
-        DatabaseInitializer.generateDatabase();
+        InsertJsonDataToDatabase.DatabaseInitializer.generateDatabase();
 
         Vertx vertx = Vertx.vertx();
-        vertx.deployVerticle(new quizApi());
+        vertx.deployVerticle(new QuizApi());
     }
 
 }

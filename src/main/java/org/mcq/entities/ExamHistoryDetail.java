@@ -1,4 +1,4 @@
-package org.MCQ.Entities;
+package org.mcq.entities;
 
 public class ExamHistoryDetail {
     private String date;

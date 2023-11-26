@@ -1,4 +1,4 @@
-package org.MCQ.Controllers;
+package org.mcq.controller;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
@@ -6,19 +6,19 @@ import io.vertx.core.json.Json;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
-import org.MCQ.Entities.ExamHistory;
-import org.MCQ.Entities.ExamQuestion;
-import org.MCQ.database.ExamDao;
-import org.MCQ.database.ExamHistoryDao;
-import org.MCQ.database.QuestionDao;
-import org.MCQ.service.QuestionService;
-import org.MCQ.service.QuizService;
-import org.MCQ.service.SimulationService;
+import org.mcq.entities.ExamHistory;
+import org.mcq.entities.ExamQuestion;
+import org.mcq.dao.ExamDao;
+import org.mcq.dao.ExamHistoryDao;
+import org.mcq.dao.QuestionDao;
+import org.mcq.service.QuestionService;
+import org.mcq.service.QuizService;
+import org.mcq.service.SimulationService;
 import redis.clients.jedis.Jedis;
 
 import java.sql.*;
 
-public class quizApi extends AbstractVerticle {
+public class QuizApi extends AbstractVerticle {
     private ExamDao examDao;
     private ExamHistoryDao examHistoryDao;
     private QuestionService questionService;
@@ -39,7 +39,6 @@ public class quizApi extends AbstractVerticle {
     private void initializeDatabaseConnection() throws SQLException {
         connection = DriverManager.getConnection("jdbc:sqlite:database/database.db");
         examDao = new ExamDao(connection);
-        QuestionDao questionDao = new QuestionDao(connection);
         examHistoryDao = new ExamHistoryDao(connection);
     }
 
@@ -86,15 +85,6 @@ public class quizApi extends AbstractVerticle {
     }
 
 
-
-
-
-//    private void getAllQuestions(RoutingContext context) {
-//        List<ExamQuestion> ExamQuestions = questionService.getAllQuestions();
-//        context.response()
-//                .putHeader("content-type", "application/json")
-//                .end(Json.encode(ExamQuestions));
-//    }
 
     private void getExamHistory (RoutingContext context) {
         String email = context.request().getParam("email");

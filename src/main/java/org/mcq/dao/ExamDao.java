@@ -1,4 +1,4 @@
-package org.MCQ.database;
+package org.mcq.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

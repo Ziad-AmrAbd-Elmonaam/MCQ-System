@@ -1,10 +1,10 @@
-package org.MCQ.service;
+package org.mcq.service;
 
 import io.vertx.core.json.Json;
-import org.MCQ.Entities.ExamQuestion;
-import org.MCQ.database.ExamDao;
-import org.MCQ.database.ExamHistoryDao;
-import org.MCQ.database.QuestionDao;
+import org.mcq.entities.ExamQuestion;
+import org.mcq.dao.ExamDao;
+import org.mcq.dao.ExamHistoryDao;
+import org.mcq.dao.QuestionDao;
 import redis.clients.jedis.Jedis;
 
 import java.util.*;
