@@ -40,7 +40,7 @@ public class QuizService {
 
                 throw new Exception("Invalid question: Question not found in the list of questions");
             }
-            int questoinIndex = examQuestionList.indexOf(question);
+            int questionIndex = examQuestionList.indexOf(question);
 
             // Validate the answer
             boolean isCorrect = question.getAnswers().stream()
@@ -60,7 +60,7 @@ public class QuizService {
             if (!isCorrect) {
                 if (question.getAttempts() == 0) {
                     question.addQuestionBackToPool(answerId); // Use answerId her
-                    examQuestionList.set(questoinIndex, question);
+                    examQuestionList.set(questionIndex, question);
 
                     updateRedis(email, examQuestionList);
                     return question;
@@ -73,15 +73,15 @@ public class QuizService {
 
                 }
 
-                examQuestionList.set(questoinIndex, question);
+                examQuestionList.set(questionIndex, question);
                 updateRedis(email, examQuestionList);
             }
 
 
             examHistoryDao.save(getExamId(email),questionId,answerId,question.getMark());
 
-            if (questoinIndex + 1 < examQuestionList.size())
-                return (ExamQuestion) examQuestionList.get(questoinIndex + 1);
+            if (questionIndex + 1 < examQuestionList.size())
+                return (ExamQuestion) examQuestionList.get(questionIndex + 1);
             else {
 
                 examDao.save(email, getExamScore(email), getExamId(email));
@@ -112,8 +112,7 @@ public class QuizService {
             ObjectMapper objectMapper = new ObjectMapper();
             TypeFactory typeFactory = objectMapper.getTypeFactory();
             CollectionType collectionType = typeFactory.constructCollectionType(List.class, ExamQuestion.class);
-            List<ExamQuestion> examQuestionList = objectMapper.readValue(questionsJson, collectionType);
-            return examQuestionList;
+            return objectMapper.readValue(questionsJson, collectionType);
 
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

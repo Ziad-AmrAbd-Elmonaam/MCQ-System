@@ -1,7 +1,8 @@
 package org.mcq;
 
 import io.vertx.core.Vertx;
-import org.mcq.controller.QuizApi;
+import org.mcq.controller.QuizController;
+import org.mcq.database.DatabaseInitializer;
 import org.mcq.database.InsertJsonDataToDatabase;
 
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
@@ -14,10 +15,10 @@ public class Main {
 
 
         System.out.println("working");
-        InsertJsonDataToDatabase.DatabaseInitializer.generateDatabase();
+        DatabaseInitializer.generateDatabase();
 
         Vertx vertx = Vertx.vertx();
-        vertx.deployVerticle(new QuizApi());
+        vertx.deployVerticle(new QuizController());
     }
 
 }

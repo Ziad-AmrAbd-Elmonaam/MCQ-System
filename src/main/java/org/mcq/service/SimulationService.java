@@ -3,6 +3,8 @@ package org.mcq.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Random;
+
+import org.mcq.database.redis.RedisService;
 import org.mcq.entities.ExamQuestion;
 import org.mcq.entities.ExamQuestionAnswer;
 import org.mcq.entities.User;
@@ -17,19 +19,19 @@ import java.util.List;
 
 public class SimulationService {
     private Random random = new Random();
-    private Jedis jedis;
 
-    ExamHistoryDao examHistoryDao;
+    private ExamHistoryDao examHistoryDao;
     private final QuestionService questionService;
-    private QuizService quizService;
-    private ExamDao examDao;
+    private final QuizService quizService;
+    private final ExamDao examDao;
+    private final RedisService redisService;
 
-    public SimulationService(QuestionService questionService, QuizService quizService, ExamDao examDao, ExamHistoryDao examHistoryDao, Jedis jedis) {
+    public SimulationService(QuestionService questionService, QuizService quizService, ExamDao examDao, ExamHistoryDao examHistoryDao, RedisService redisService) {
         this.questionService = questionService;
         this.quizService = quizService;
         this.examDao = examDao;
         this.examHistoryDao = examHistoryDao;
-        this.jedis = jedis;
+        this.redisService = redisService;
     }
     public void simulateExamsForUsers() {
         // Generate 100 simulated users
@@ -41,13 +43,13 @@ public class SimulationService {
             String questionsJson = questionService.getRandomQuestions(email);
             List<ExamQuestion> examQuestions = deserializeQuestions(questionsJson);
             submitExam(email, examQuestions);
-            jedis.del(email); // Delete the questions from Redis
+            redisService.delete(email);
         });
     }
 
     private List<User> generateRandomUsers() {
         List<User> users = new ArrayList<>();
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10; i++) {
             users.add(new User(generateRandomEmail()));
         }
         return users;
@@ -103,7 +105,7 @@ ExamQuestion question = examQuestions.get(0);
     }
 
     private List<ExamQuestion> getQuestionsFromRedis(String email) {
-        String questionsJson = jedis.get(email);
+        String questionsJson = redisService.get(email);
         if (questionsJson == null || questionsJson.isEmpty()) {
             return null;
         }

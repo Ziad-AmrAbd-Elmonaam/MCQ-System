@@ -1,38 +1,25 @@
 package org.mcq.service;
 
 import io.vertx.core.json.Json;
-import org.mcq.entities.ExamQuestion;
-import org.mcq.dao.ExamDao;
-import org.mcq.dao.ExamHistoryDao;
 import org.mcq.dao.QuestionDao;
+import org.mcq.entities.ExamQuestion;
 import redis.clients.jedis.Jedis;
 
-import java.util.*;
+import java.util.List;
 
 public class QuestionService {
 
     private final QuestionDao questionDao;
     private final Jedis jedis;
-    private final ExamHistoryDao examHistoryDao;
 
-    public QuestionService(QuestionDao questionDao, Jedis jedis, ExamDao examDao, ExamHistoryDao examHistoryDao) {
+    public QuestionService(QuestionDao questionDao, Jedis jedis) {
         this.questionDao = questionDao;
         this.jedis = jedis;
-        this.examDao = examDao;
-        this.examHistoryDao = examHistoryDao;
-
 
     }
-    private final ExamDao examDao;
-
-//    public List<ExamQuestion> getAllQuestions() {
-//        return questionDao.getAllQuestions();
-//    }
-
 
 
     public String getRandomQuestions(String email) {
-        // Attempt to retrieve data from Redis
         String redisData;
         try {
             redisData = jedis.get(email);
@@ -41,15 +28,13 @@ public class QuestionService {
             }
         } catch (Exception e) {
             System.err.println("Error retrieving data from Redis: " + e.getMessage());
-            // Optional: Consider re-throwing the exception or handling it as per your application's requirements
         }
 
         // Fetch questions from the database if not found in Redis
         List<ExamQuestion> examQuestions = questionDao.getRandomQuestions(10);
         if (examQuestions.isEmpty()) {
             // Handle the case where there are no questions
-            // For example, return a specific message or throw an exception
-            return "No questions available"; // Placeholder message
+            return "No questions available";
         }
 
         // Save the fetched questions in Redis and return the JSON representation
@@ -59,15 +44,9 @@ public class QuestionService {
             return jsonExamQuestions;
         } catch (Exception e) {
             System.err.println("Error storing data in Redis: " + e.getMessage());
-            // Optional: Consider re-throwing the exception or handling it as per your application's requirements
-            return "Error processing request"; // Placeholder error message
+            return "Error processing request";
         }
     }
-
-
-
-
-
 
 
 }
