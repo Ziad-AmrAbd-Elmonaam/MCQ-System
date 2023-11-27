@@ -1,5 +1,6 @@
     package org.mcq.dao;
 
+    import org.mcq.database.DatabaseConnectionFactory;
     import org.mcq.entities.ExamQuestionAnswer;
     import org.mcq.entities.ExamQuestion;
 
@@ -13,13 +14,18 @@
     import java.util.Map;
 
     public class QuestionDao {
-        private Connection connection;
+        private final Connection connection;
 
 
         // Constructor that sets the connection
-        public QuestionDao(Connection connection) {
-            this.connection = connection;
-            System.out.println("connection" + connection);
+        public QuestionDao() {
+            try {
+                this.connection = DatabaseConnectionFactory.createDatabaseConnection();
+
+            }
+            catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
         public void addQuestion(ExamQuestion examQuestion) {
             String sql = "INSERT INTO questions (id, title) VALUES (?, ?)";

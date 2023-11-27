@@ -1,5 +1,6 @@
 package org.mcq.dao;
 
+import org.mcq.database.DatabaseConnectionFactory;
 import org.mcq.entities.ExamHistory;
 
 import java.sql.Connection;
@@ -9,8 +10,13 @@ import java.sql.SQLException;
 
 public class ExamHistoryDao {
     private final Connection connection;
-    public ExamHistoryDao(Connection connection) {
-        this.connection = connection;
+    public ExamHistoryDao() {
+        try {
+            connection = DatabaseConnectionFactory.createDatabaseConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
     public ExamHistory getExamHistory(String email) {
         String sql = "SELECT eh.date, eh.id, eh.exam_id, eh.question_id, eh.answer_id, eh.mark, e.score " +

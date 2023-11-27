@@ -34,10 +34,8 @@ public class SimulationService {
         this.redisService = redisService;
     }
     public void simulateExamsForUsers() {
-        // Generate 100 simulated users
-        List<User> simulatedUsers = generateRandomUsers(); // Generate 10 random users
+        List<User> simulatedUsers = generateRandomUsers();
 
-        // Assign and submit exams for each simulated user
         simulatedUsers.forEach(user -> {
             String email = user.getEmail();
             String questionsJson = questionService.getRandomQuestions(email);
@@ -49,7 +47,7 @@ public class SimulationService {
 
     private List<User> generateRandomUsers() {
         List<User> users = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 1000; i++) {
             users.add(new User(generateRandomEmail()));
         }
         return users;
@@ -68,16 +66,18 @@ public class SimulationService {
     private void submitExam(String email, List<ExamQuestion> examQuestions) {
         int score = 0;
 ExamQuestion question = examQuestions.get(0);
-        while (true) {
+        do {
             List<ExamQuestionAnswer> answers = question.getAnswers();
             int randomIndex = random.nextInt(answers.size()); // Get a random index
             ExamQuestionAnswer randomAnswer = answers.get(randomIndex); // Get the answer from that index
             int answerId = randomAnswer.getId(); // Use the ID of this answer
-        question= quizService.validateAnswerHandler(email, question.getId(), answerId);
-            if (question == null) {
-                break;
+
+            try {
+                question = quizService.validateAnswerHandler(email, question.getId(), answerId);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-        }
+        } while (question != null);
 
         // Save the exam result
         // set score from redis
@@ -112,7 +112,8 @@ ExamQuestion question = examQuestions.get(0);
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            return objectMapper.readValue(questionsJson, new TypeReference<List<ExamQuestion>>() {});
+            return objectMapper.readValue(questionsJson, new TypeReference<>() {
+            });
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -124,7 +125,7 @@ ExamQuestion question = examQuestions.get(0);
         String alphaNumeric = alphabet + numbers;
         StringBuilder sb = new StringBuilder();
         Random rnd = new Random();
-        for (int i = 0; i < 100; i++) { // Generate 10-character long username part
+        for (int i = 0; i < 100; i++) {
             int index = rnd.nextInt(alphaNumeric.length());
             sb.append(alphaNumeric.charAt(index));
         }

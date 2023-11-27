@@ -2,6 +2,9 @@ package org.mcq.service;
 
 import io.vertx.core.json.Json;
 import org.mcq.dao.QuestionDao;
+import org.mcq.database.DatabaseConnectionFactory;
+import org.mcq.database.DatabaseInitializer;
+import org.mcq.database.redis.RedisService;
 import org.mcq.entities.ExamQuestion;
 import redis.clients.jedis.Jedis;
 
@@ -12,9 +15,11 @@ public class QuestionService {
     private final QuestionDao questionDao;
     private final Jedis jedis;
 
-    public QuestionService(QuestionDao questionDao, Jedis jedis) {
-        this.questionDao = questionDao;
-        this.jedis = jedis;
+    public QuestionService() {
+
+        this.questionDao = new QuestionDao();
+        jedis = DatabaseConnectionFactory.createRedisConnection();
+
 
     }
 

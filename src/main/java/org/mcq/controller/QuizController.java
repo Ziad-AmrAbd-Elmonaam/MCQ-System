@@ -9,7 +9,6 @@ import org.mcq.entities.ExamHistory;
 import org.mcq.entities.ExamQuestion;
 import org.mcq.dao.ExamDao;
 import org.mcq.dao.ExamHistoryDao;
-import org.mcq.dao.QuestionDao;
 import org.mcq.router.RouterUtility;
 import org.mcq.service.QuestionService;
 import org.mcq.service.QuizService;
@@ -30,26 +29,17 @@ public class QuizController extends AbstractVerticle {
 
     @Override
     public void start(Promise<Void> startPromise) {
-        try {
-            connection = DatabaseConnectionFactory.createDatabaseConnection();
-            jedis = DatabaseConnectionFactory.createRedisConnection();
-            redisService = new RedisService(jedis);
-            initializeDatabaseRelatedObjects();
-            RouterUtility.setUpRouter(vertx, this, startPromise);
-        } catch (SQLException e) {
-            startPromise.fail("Database connection error: " + e.getMessage());
-        }
+        jedis = DatabaseConnectionFactory.createRedisConnection();
+        redisService = new RedisService(jedis);
+        initializeDatabaseRelatedObjects();
+        RouterUtility.setUpRouter(vertx, this, startPromise);
     }
     private void initializeDatabaseRelatedObjects() {
-        examDao = new ExamDao(connection);
-        examHistoryDao = new ExamHistoryDao(connection);
-        questionService = new QuestionService(new QuestionDao(connection), jedis);
+        examDao = new ExamDao();
+        examHistoryDao = new ExamHistoryDao();
+        questionService = new QuestionService();
         quizService = new QuizService(jedis, examDao, examHistoryDao);
     }
-
-
-
-
 
     public void simulateExamsHandler(RoutingContext context) {
         SimulationService simulationService = new SimulationService(questionService, quizService, examDao, examHistoryDao, redisService);
@@ -93,7 +83,7 @@ public class QuizController extends AbstractVerticle {
             if (nextQuestion == null) {
                 int score = quizService.getExamScore(email);
                 context.response().setStatusCode(200).end("Your exam score is " + score + " out of 20");
-                jedis.del(email);
+                redisService.delete(email);
                 return;
             }
 

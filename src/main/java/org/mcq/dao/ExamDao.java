@@ -1,5 +1,7 @@
 package org.mcq.dao;
 
+import org.mcq.database.DatabaseConnectionFactory;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -8,10 +10,15 @@ public class ExamDao {
 
     private Connection connection;
 
-    public ExamDao(Connection connection) {
-        this.connection = connection;
-    }
+    public ExamDao() {
+        try {
+            connection = DatabaseConnectionFactory.createDatabaseConnection();
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+    }
     public void save(String mail, int score, int examId) {
 
         String sql = "INSERT INTO exams (email, score, examId) " +
