@@ -11,16 +11,12 @@ import redis.clients.jedis.Jedis;
 import java.util.List;
 
 public class QuestionService {
-
-    private final QuestionDao questionDao;
     private final Jedis jedis;
+    private final QuestionDao questionDao;
 
     public QuestionService() {
-
         this.questionDao = new QuestionDao();
         jedis = DatabaseConnectionFactory.createRedisConnection();
-
-
     }
 
 
@@ -35,14 +31,11 @@ public class QuestionService {
             System.err.println("Error retrieving data from Redis: " + e.getMessage());
         }
 
-        // Fetch questions from the database if not found in Redis
         List<ExamQuestion> examQuestions = questionDao.getRandomQuestions(10);
         if (examQuestions.isEmpty()) {
-            // Handle the case where there are no questions
             return "No questions available";
         }
 
-        // Save the fetched questions in Redis and return the JSON representation
         try {
             String jsonExamQuestions = Json.encode(examQuestions);
             jedis.set(email, jsonExamQuestions);

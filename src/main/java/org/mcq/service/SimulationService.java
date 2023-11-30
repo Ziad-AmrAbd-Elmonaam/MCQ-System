@@ -1,37 +1,31 @@
 package org.mcq.service;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Random;
-
 import org.mcq.database.redis.RedisService;
 import org.mcq.entities.ExamQuestion;
 import org.mcq.entities.ExamQuestionAnswer;
 import org.mcq.entities.User;
 import org.mcq.dao.ExamDao;
-import org.mcq.dao.ExamHistoryDao;
 import redis.clients.jedis.Jedis;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class SimulationService {
-    private Random random = new Random();
+    private final Random random = new Random();
 
-    private ExamHistoryDao examHistoryDao;
     private final QuestionService questionService;
     private final QuizService quizService;
     private final ExamDao examDao;
     private final RedisService redisService;
 
-    public SimulationService(QuestionService questionService, QuizService quizService, ExamDao examDao, ExamHistoryDao examHistoryDao, RedisService redisService) {
-        this.questionService = questionService;
-        this.quizService = quizService;
-        this.examDao = examDao;
-        this.examHistoryDao = examHistoryDao;
-        this.redisService = redisService;
+    public SimulationService() {
+        this.questionService = new QuestionService();
+        this.quizService = new QuizService();
+        this.examDao = new ExamDao();
+        this.redisService = new RedisService(new Jedis());
     }
     public void simulateExamsForUsers() {
         List<User> simulatedUsers = generateRandomUsers();
@@ -47,7 +41,7 @@ public class SimulationService {
 
     private List<User> generateRandomUsers() {
         List<User> users = new ArrayList<>();
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10; i++) {
             users.add(new User(generateRandomEmail()));
         }
         return users;
@@ -56,7 +50,8 @@ public class SimulationService {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             return objectMapper.readValue(json,
-                    new TypeReference<List<ExamQuestion>>() {});
+                    new TypeReference<>() {
+                    });
         } catch (IOException e) {
             e.printStackTrace();
             return Collections.emptyList();
@@ -87,22 +82,7 @@ ExamQuestion question = examQuestions.get(0);
     }
 
 
-    private int getRandomAnswerId(String email) {
-        List<ExamQuestion> examQuestions = getQuestionsFromRedis(email);
-        if (examQuestions == null || examQuestions.isEmpty()) {
-            throw new IllegalStateException("No questions available for email: " + email);
-        }
 
-        // Randomly select a question
-        ExamQuestion randomQuestion = examQuestions.get(random.nextInt(examQuestions.size()));
-        if (randomQuestion.getAnswers() == null || randomQuestion.getAnswers().isEmpty()) {
-            throw new IllegalStateException("No answers available for the selected question.");
-        }
-
-        // Randomly select an answer ID from the question
-        ExamQuestionAnswer randomAnswer = randomQuestion.getAnswers().get(random.nextInt(randomQuestion.getAnswers().size()));
-        return randomAnswer.getId();
-    }
 
     private List<ExamQuestion> getQuestionsFromRedis(String email) {
         String questionsJson = redisService.get(email);

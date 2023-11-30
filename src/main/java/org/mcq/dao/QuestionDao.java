@@ -17,7 +17,6 @@
         private final Connection connection;
 
 
-        // Constructor that sets the connection
         public QuestionDao() {
             try {
                 this.connection = DatabaseConnectionFactory.createDatabaseConnection();

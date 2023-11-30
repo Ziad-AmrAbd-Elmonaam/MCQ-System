@@ -17,5 +17,9 @@ public class RedisService {
         jedis.del(key);
     }
 
+    public boolean isKeyExists(String email) {
+        return jedis.exists(email);
+    }
+
     // Add other Redis-related methods here
 }

@@ -26,11 +26,10 @@ public class ExamHistoryDao {
 
         ExamHistory examHistory = new ExamHistory();
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, email); // Set the email parameter
+            statement.setString(1, email);
             ResultSet rs = statement.executeQuery();
 
             while (rs.next()) {
-                // Assuming you have a method in ExamHistory to add history details
                 examHistory.addHistoryDetail(
                         rs.getString("date"),
                         rs.getInt("id"),

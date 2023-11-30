@@ -1,11 +1,10 @@
 package org.mcq.service;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.vertx.core.json.Json;
-import org.mcq.entities.Exam;
+import org.mcq.database.DatabaseConnectionFactory;
 import org.mcq.entities.ExamQuestion;
 import org.mcq.entities.ExamQuestionAnswer;
 import org.mcq.dao.ExamDao;
@@ -20,14 +19,27 @@ public class QuizService {
     private final ExamHistoryDao examHistoryDao;
 
 
-    public QuizService(Jedis jedis, ExamDao examDao, ExamHistoryDao examHistoryDao) {
-        this.jedis = jedis;
-        this.examDao = examDao;
-        this.examHistoryDao = examHistoryDao;
+    public QuizService() {
+         jedis = DatabaseConnectionFactory.createRedisConnection();
+         examDao = new ExamDao();
+         examHistoryDao = new ExamHistoryDao();
     }
+    public ExamQuestion processAnswer(String email, int questionId, int answerId) throws Exception {
+        if (!isUserValid(email)) {
+            throw new IllegalArgumentException("No questions found for this email");
+        }
 
-
-
+        ExamQuestion nextQuestion = validateAnswerHandler(email, questionId, answerId);
+        if (nextQuestion == null) {
+            saveExamResult(email);
+        }
+        return nextQuestion;
+    }
+    private void saveExamResult(String email) {
+        int score = getExamScore(email);
+        int examId = getExamId(email);
+        examDao.save(email, score, examId);
+    }
     public ExamQuestion validateAnswerHandler(String email, int questionId, int answerId) throws Exception {
             List<ExamQuestion> examQuestionList = getQuestionFromCache(email);
             ExamQuestion question = examQuestionList.stream().filter(x -> x.getId() == questionId).findFirst().orElse(null);
@@ -64,9 +76,11 @@ public class QuizService {
             examHistoryDao.save(getExamId(email),questionId,answerId,question.getMark());
 
             if (questionIndex + 1 < examQuestionList.size())
-                return (ExamQuestion) examQuestionList.get(questionIndex + 1);
+                return examQuestionList.get(questionIndex + 1);
             else {
                 examDao.save(email, getExamScore(email), getExamId(email));
+
+
                 return null;
             }
     }
@@ -92,7 +106,8 @@ public class QuizService {
     }
 
 
-    public boolean     isUserValid(String email) {
+
+    public boolean isUserValid(String email) {
         return getQuestionFromCache(email) != null;
     }
 
@@ -104,6 +119,10 @@ public class QuizService {
     public int getExamId(String email) {
         List<ExamQuestion> examQuestionList = getQuestionFromCache(email);
         return   examQuestionList.get(0).getExamId();
+    }
+
+    public void removeExamFromCache(String email){
+        jedis.del(email);
     }
 
 }
