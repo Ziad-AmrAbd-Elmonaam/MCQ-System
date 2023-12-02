@@ -68,29 +68,33 @@ public class QuizController extends AbstractVerticle {
         try {
             ExamQuestion nextQuestion = quizService.processAnswer(email, Integer.parseInt(questionId), Integer.parseInt(answerId));
 
-            if (nextQuestion == null ) {
-                if (!redisService.isKeyExists(email)) {
-                    context.response().setStatusCode(404).end("Exam already submitted");
-                    return;
-                }
-
-                // Otherwise, proceed to calculate the score and remove the exam from cache.
-                int score = quizService.getExamScore(email);
-                quizService.removeExamFromCache(email);
-                context.response().setStatusCode(200).end("Your exam score is " + score + " out of 20");
-            } else {
+            if (nextQuestion != null) {
                 context.response()
                         .putHeader("content-type", "application/json")
                         .end(Json.encode(nextQuestion));
+            } else {
+                handleExamCompletion(context, email);
             }
         } catch (NumberFormatException e) {
             context.response().setStatusCode(400).end("Invalid number format for questionId or answerId");
         } catch (IllegalArgumentException e) {
-            context.response().setStatusCode(404).end(("you have already submitted the exam"));
+            context.response().setStatusCode(404).end(e.getMessage());
         } catch (Exception e) {
             context.response().setStatusCode(500).end("Internal Server Error: " + e.getMessage());
         }
     }
+
+    private void handleExamCompletion(RoutingContext context, String email) {
+        try {
+            String result = quizService.handleExamCompletion(email);
+            context.response().setStatusCode(200).end(result);
+        } catch (IllegalArgumentException e) {
+            context.response().setStatusCode(404).end(e.getMessage());
+        } catch (Exception e) {
+            context.response().setStatusCode(500).end("Internal Server Error: " + e.getMessage());
+        }
+    }
+
 
 
 

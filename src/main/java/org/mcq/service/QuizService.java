@@ -124,5 +124,15 @@ public class QuizService {
     public void removeExamFromCache(String email){
         jedis.del(email);
     }
+    public String handleExamCompletion(String email) throws Exception {
+        if (!jedis.exists(email)) {
+            throw new IllegalArgumentException("Exam already submitted");
+        }
+        int score = getExamScore(email);
+        removeExamFromCache(email);
+        return "Your exam score is " + score + " out of 20";
+    }
+
+
 
 }
