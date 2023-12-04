@@ -76,7 +76,7 @@ public class QuizController extends AbstractVerticle {
                 handleExamCompletion(context, email);
             }
         } catch (NumberFormatException e) {
-            context.response().setStatusCode(400).end("Invalid number format for questionId or answerId");
+            context.    response().setStatusCode(400).end("Invalid number format for questionId or answerId");
         } catch (IllegalArgumentException e) {
             context.response().setStatusCode(404).end(e.getMessage());
         } catch (Exception e) {

@@ -41,7 +41,7 @@ public class SimulationService {
 
     private List<User> generateRandomUsers() {
         List<User> users = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 1000; i++) {
             users.add(new User(generateRandomEmail()));
         }
         return users;
@@ -63,9 +63,9 @@ public class SimulationService {
 ExamQuestion question = examQuestions.get(0);
         do {
             List<ExamQuestionAnswer> answers = question.getAnswers();
-            int randomIndex = random.nextInt(answers.size()); // Get a random index
-            ExamQuestionAnswer randomAnswer = answers.get(randomIndex); // Get the answer from that index
-            int answerId = randomAnswer.getId(); // Use the ID of this answer
+            int randomIndex = random.nextInt(answers.size());
+            ExamQuestionAnswer randomAnswer = answers.get(randomIndex);
+            int answerId = randomAnswer.getId();
 
             try {
                 question = quizService.validateAnswerHandler(email, question.getId(), answerId);
@@ -74,8 +74,7 @@ ExamQuestion question = examQuestions.get(0);
             }
         } while (question != null);
 
-        // Save the exam result
-        // set score from redis
+
          score= quizService.getExamScore(email);
         int examId = quizService.getExamId(email);
         examDao.save(email, score, examId);

@@ -30,7 +30,6 @@
             String sql = "INSERT INTO questions (id, title) VALUES (?, ?)";
 
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                // Set the id and title of the question
                 statement.setInt(1, examQuestion.getId());
                 statement.setString(2, examQuestion.getTitle());
 
@@ -39,32 +38,11 @@
                 statement.executeUpdate();
                 System.out.println("Question added to the database");
             } catch (SQLException e) {
-                // Handle the exception more gracefully, log it, or rethrow as needed
                 e.printStackTrace();
             }
         }
 
 
-        // Method to retrieve all questions from the database
-//        public List<ExamQuestion> getAllQuestions() {
-//            List<ExamQuestion> ExamQuestions = new ArrayList<>();
-//            String sql = "SELECT * FROM questions";
-//            try (PreparedStatement statement = connection.prepareStatement(sql);
-//                 ResultSet rs = statement.executeQuery()) {
-//
-//                while (rs.next()) {
-//                    int id = rs.getInt("id");
-//                    String title = rs.getString("title");
-//
-//                    ExamQuestion examQuestion = new ExamQuestion(id, title, 0, 0, 0);
-//                    ExamQuestions.add(examQuestion);
-//                }
-//            } catch (SQLException e) {
-//                // Handle the exception more gracefully, log it, or rethrow as needed
-//                e.printStackTrace();
-//            }
-//            return ExamQuestions;
-//        }
 
         public List<ExamQuestion> getRandomQuestions(int limit) {
             List<ExamQuestion> randomExamQuestions = new ArrayList<>();
@@ -107,7 +85,7 @@
                     randomExamQuestions.addAll(questionsMap.values());
                 }
             } catch (SQLException e) {
-                e.printStackTrace(); // Replace with more robust error handling
+                e.printStackTrace();
             }
             return randomExamQuestions;
         }
