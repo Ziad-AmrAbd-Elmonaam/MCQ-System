@@ -1,4 +1,5 @@
 package org.mcq.controller;
+
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.json.Json;
@@ -14,8 +15,9 @@ import org.mcq.service.QuizService;
 import org.mcq.service.SimulationService;
 import redis.clients.jedis.Jedis;
 
-
-
+/**
+ * Controller class for managing quizzes and exams using Vert.x.
+ */
 public class QuizController extends AbstractVerticle {
     private SimulationService simulationService;
     private RedisService redisService;
@@ -24,23 +26,44 @@ public class QuizController extends AbstractVerticle {
     private QuizService quizService;
     private Jedis jedis;
 
+    /**
+     * Verticle start method.
+     *
+     * @param startPromise Promise object for asynchronous startup
+     */
     @Override
     public void start(Promise<Void> startPromise) {
+        // Establish connection to Redis
         jedis = DatabaseConnectionFactory.createRedisConnection();
         redisService = new RedisService(jedis);
+
+        // Initialize services
         historyService = new HistoryService();
         questionService = new QuestionService();
         quizService = new QuizService();
         simulationService = new SimulationService();
+
+        // Set up Vert.x router
         RouterUtility.setUpRouter(vertx, this, startPromise);
     }
 
+    /**
+     * Handler for simulating exams for users.
+     *
+     * @param context Routing context
+     */
     public void simulateExamsHandler(RoutingContext context) {
         simulationService.simulateExamsForUsers();
         context.response()
                 .putHeader("content-type", "application/json")
                 .end("{\"message\": \"Simulation started\"}");
     }
+
+    /**
+     * Handler for getting random questions for a user.
+     *
+     * @param context Routing context
+     */
     public void getRandomQuestionsHandler(RoutingContext context) {
         String email = context.request().getParam("email");
         String questionsJson = questionService.getRandomQuestions(email);
@@ -49,17 +72,24 @@ public class QuizController extends AbstractVerticle {
                 .end(questionsJson);
     }
 
-
-
+    /**
+     * Handler for retrieving exam history for a user.
+     *
+     * @param context Routing context
+     */
     public void getExamHistory(RoutingContext context) {
         String email = context.request().getParam("email");
         ExamHistory examHistory = historyService.getExamHistory(email);
-          context.response()
-                    .putHeader("content-type", "application/json")
-                    .end(Json.encode(examHistory));
+        context.response()
+                .putHeader("content-type", "application/json")
+                .end(Json.encode(examHistory));
     }
 
-
+    /**
+     * Handler for validating user answers during an ongoing exam.
+     *
+     * @param context Routing context
+     */
     public void validateAnswer(RoutingContext context) {
         String email = context.pathParam("email");
         String questionId = context.pathParam("questionId");
@@ -76,7 +106,7 @@ public class QuizController extends AbstractVerticle {
                 handleExamCompletion(context, email);
             }
         } catch (NumberFormatException e) {
-            context.    response().setStatusCode(400).end("Invalid number format for questionId or answerId");
+            context.response().setStatusCode(400).end("Invalid number format for questionId or answerId");
         } catch (IllegalArgumentException e) {
             context.response().setStatusCode(404).end(e.getMessage());
         } catch (Exception e) {
@@ -84,6 +114,12 @@ public class QuizController extends AbstractVerticle {
         }
     }
 
+    /**
+     * Private method to handle exam completion.
+     *
+     * @param context Routing context
+     * @param email   User's email
+     */
     private void handleExamCompletion(RoutingContext context, String email) {
         try {
             String result = quizService.handleExamCompletion(email);
@@ -95,14 +131,13 @@ public class QuizController extends AbstractVerticle {
         }
     }
 
-
-
-
+    /**
+     * Verticle stop method. Closes the connection to Redis.
+     *
+     * @throws Exception Thrown on failure to close the connection
+     */
     @Override
     public void stop() throws Exception {
         DatabaseConnectionFactory.closeRedisConnection(jedis);
     }
-
-
-
 }
