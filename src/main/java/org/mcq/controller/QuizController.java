@@ -7,7 +7,7 @@ import io.vertx.ext.web.RoutingContext;
 import org.mcq.database.DatabaseConnectionFactory;
 import org.mcq.database.redis.RedisService;
 import org.mcq.entities.ExamHistory;
-import org.mcq.entities.ExamQuestion;
+import org.mcq.model.ExamQuestion;
 import org.mcq.router.RouterUtility;
 import org.mcq.service.HistoryService;
 import org.mcq.service.QuestionService;
