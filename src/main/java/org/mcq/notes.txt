@@ -1,0 +1,5 @@
+make exam Entity
+ exam contains id , email , date , time , duration , total marks
+ exam examQuestion contains id , exam id , examQuestion id , attempts , mark
+ exam examQuestion answer contains id , exam examQuestion id , answer id , is correct
+
